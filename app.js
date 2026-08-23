@@ -6,6 +6,7 @@ import {
     GoogleAuthProvider, 
     signInWithPopup, 
     updateProfile,
+    sendPasswordResetEmail,
     signOut, 
     onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -21,7 +22,7 @@ import {
 // 🟢 ضع كود firebaseConfig الخاص بك هنا 🟢
 // =========================================================
 const firebaseConfig = {
-     apiKey: "AIzaSyDZ6EhqJ7GgrSAoWaeUB_Z-4LhsQ785Mo4",
+    apiKey: "AIzaSyDZ6EhqJ7GgrSAoWaeUB_Z-4LhsQ785Mo4",
     authDomain: "home-budget-app-71cf0.firebaseapp.com",
     projectId: "home-budget-app-71cf0",
     storageBucket: "home-budget-app-71cf0.firebasestorage.app",
@@ -67,6 +68,14 @@ const saveIncomeBtn = document.getElementById('saveIncomeBtn');
 const searchInput = document.getElementById('searchInput');
 const filterCategory = document.getElementById('filterCategory');
 
+// --- دالة أمنية لتطهير النصوص ومنع هجمات XSS ---
+function sanitizeHTML(str) {
+    if (!str) return '';
+    const temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
+}
+
 // --- 1. إدارة الوضع الداكن (Dark Mode) ---
 function initTheme() {
     const savedTheme = localStorage.getItem('appTheme') || 'light';
@@ -97,7 +106,7 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
         const displayName = user.displayName || user.email.split('@')[0];
-        userNameDisplay.textContent = displayName;
+        userNameDisplay.textContent = sanitizeHTML(displayName);
 
         authSection.classList.add('d-none');
         appSection.classList.remove('d-none');
@@ -115,7 +124,7 @@ googleAuthBtn.addEventListener('click', async () => {
     try {
         await signInWithPopup(auth, googleProvider);
     } catch (error) {
-        Swal.fire({ icon: 'error', title: 'خطأ', text: error.message });
+        Swal.fire({ icon: 'error', title: 'خطأ', text: 'فشل تسجيل الدخول بواسطة Google' });
     }
 });
 
@@ -141,9 +150,15 @@ toggleAuthBtn.addEventListener('click', (e) => {
 // Auth Form Submit
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('authEmail').value;
+    const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value;
-    const name = document.getElementById('authName').value;
+    const name = document.getElementById('authName').value.trim();
+
+    // التحقق من صحة كلمة السر أمنياً
+    if (isSignUpMode && password.length < 8) {
+        Swal.fire({ icon: 'warning', title: 'كلمة سر ضعيفة', text: 'يجب أن تتكون كلمة السر من 8 خانات على الأقل.' });
+        return;
+    }
 
     try {
         if (isSignUpMode) {
@@ -154,7 +169,10 @@ authForm.addEventListener('submit', async (e) => {
             await signInWithEmailAndPassword(auth, email, password);
         }
     } catch (error) {
-        Swal.fire({ icon: 'error', title: 'خطأ في الدخول', text: error.message });
+        let msg = 'حدث خطأ أثناء عملية الدخول.';
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') msg = 'البريد الإلكتروني أو كلمة السر غير صحيحة.';
+        if (error.code === 'auth/email-already-in-use') msg = 'البريد الإلكتروني مستخدم بالفعل.';
+        Swal.fire({ icon: 'error', title: 'خطأ', text: msg });
     }
 });
 
@@ -174,16 +192,29 @@ function listenToMonthData() {
         if (docSnap.exists()) data = docSnap.data();
         activeTransactions = data.transactions || [];
         updateUI(data);
+    }, (error) => {
+        console.error("Firestore Permission Error:", error);
     });
 }
 
-// Add Expense
+// Add Expense مع التحقق الأمني من المدخلات
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const desc = document.getElementById('descInput').value;
+    const descRaw = document.getElementById('descInput').value.trim();
     const amount = parseFloat(document.getElementById('amountInput').value);
     const category = document.getElementById('categoryInput').value;
 
+    // التحقق الأمني للمبلغ والوصف
+    if (!amount || amount <= 0) {
+        Swal.fire({ icon: 'warning', title: 'مبلغ غير صالح', text: 'يرجى إدخال مبلغ أكبر من الصفر.' });
+        return;
+    }
+    if (!descRaw || descRaw.length > 100) {
+        Swal.fire({ icon: 'warning', title: 'وصف غير صالح', text: 'يرجى إدخال وصف لا يتجاوز 100 حرف.' });
+        return;
+    }
+
+    const desc = sanitizeHTML(descRaw);
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
     const docSnap = await getDoc(docRef);
     let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
@@ -199,9 +230,14 @@ transactionForm.addEventListener('submit', async (e) => {
     Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 1200, showConfirmButton: false });
 });
 
-// Save Monthly Income
+// Save Monthly Income مع التحقق الأمني
 saveIncomeBtn.addEventListener('click', async () => {
     const newIncome = parseFloat(monthlyIncomeInput.value) || 0;
+    if (newIncome < 0) {
+        Swal.fire({ icon: 'warning', title: 'قيمة غير صالحة', text: 'لا يمكن إدخال دخل بالسالب.' });
+        return;
+    }
+
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
     const docSnap = await getDoc(docRef);
     let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
@@ -214,7 +250,7 @@ saveIncomeBtn.addEventListener('click', async () => {
 // --- 4. Delete Confirmation Modal (SweetAlert2) ---
 window.deleteTransaction = function(id) {
     Swal.fire({
-        title: 'هل أنت تأكد؟',
+        title: 'هل أنت متأكد؟',
         text: "سوف يتم حذف هذا المصروف بشكل نهائي!",
         icon: 'warning',
         showCancelButton: true,
@@ -273,9 +309,9 @@ function renderTable(transactions) {
     filtered.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${t.date}</td>
-            <td class="fw-bold">${t.desc}</td>
-            <td><span class="badge bg-secondary">${t.category}</span></td>
+            <td>${sanitizeHTML(t.date)}</td>
+            <td class="fw-bold">${sanitizeHTML(t.desc)}</td>
+            <td><span class="badge bg-secondary">${sanitizeHTML(t.category)}</span></td>
             <td class="fw-bold text-danger">-${t.amount.toLocaleString()} ج.م</td>
             <td>
                 <button onclick="deleteTransaction(${t.id})" class="btn btn-outline-danger btn-sm">
