@@ -368,3 +368,37 @@ function renderCharts(income, expenses, transactions) {
         options: { responsive: true, maintainAspectRatio: false }
     });
 }
+// 1. إظهار نافذة نسيت كلمة المرور عند الضغط على الرابط
+const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const forgotModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+        forgotModal.show();
+    });
+}
+
+// 2. معالجة إرسال طلب استعادة كلمة المرور
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('resetEmail').value;
+
+        // إغلاق النافذة المنبثقة
+        const modalElement = document.getElementById('forgotPasswordModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance.hide();
+
+        // إظهار رسالة نجاح للمستخدم (كمحاكاة للإرسال أو ربطها بـ Firebase Authentication لاحقاً)
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الإرسال بنجاح',
+            text: `تم إرسال تعليمات استعادة كلمة المرور إلى البريد: ${email}`,
+            confirmButtonText: 'حسناً'
+        });
+
+        // تفريغ الحقل
+        document.getElementById('resetEmail').value = '';
+    });
+}
