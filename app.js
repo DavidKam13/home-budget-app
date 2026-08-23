@@ -30,20 +30,19 @@ const firebaseConfig = {
 };
 // =========================================================
 
-// تهيئة خدمات Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// المتغيرات العامة
 let currentUser = null;
 let currentMonth = new Date().toISOString().slice(0, 7);
 let categoryChartInstance = null;
 let comparisonChartInstance = null;
-let isSignUpMode = true; // وضع إنشاء الحساب هو الافتراضي لعرض حقل الاسم
+let isSignUpMode = true;
+let activeTransactions = [];
 
-// عناصر الواجهة (DOM)
+// DOM Elements
 const authSection = document.getElementById('authSection');
 const appSection = document.getElementById('appSection');
 const authForm = document.getElementById('authForm');
@@ -65,11 +64,38 @@ const transactionsTableBody = document.getElementById('transactionsTableBody');
 const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
 const saveIncomeBtn = document.getElementById('saveIncomeBtn');
 
-// 1. مراقبة حالة تسجيل الدخول وتحديث اسم المستخدم
+const searchInput = document.getElementById('searchInput');
+const filterCategory = document.getElementById('filterCategory');
+
+// --- 1. إدارة الوضع الداكن (Dark Mode) ---
+function initTheme() {
+    const savedTheme = localStorage.getItem('appTheme') || 'light';
+    document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    updateThemeIcons(savedTheme);
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-bs-theme', newTheme);
+    localStorage.setItem('appTheme', newTheme);
+    updateThemeIcons(newTheme);
+}
+
+function updateThemeIcons(theme) {
+    const iconClass = theme === 'dark' ? 'fa-sun' : 'fa-moon';
+    document.getElementById('themeToggleAuth').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+    document.getElementById('themeToggleApp').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+}
+
+document.getElementById('themeToggleAuth').addEventListener('click', toggleTheme);
+document.getElementById('themeToggleApp').addEventListener('click', toggleTheme);
+initTheme();
+
+// --- 2. Auth State Observer ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        // عرض الاسم المسجل، أو الاسم من حساب Google، أو الجزء الأول من الإيميل
         const displayName = user.displayName || user.email.split('@')[0];
         userNameDisplay.textContent = displayName;
 
@@ -84,35 +110,35 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 2. التسجيل والولوج باستخدام Google
+// Google Sign-In
 googleAuthBtn.addEventListener('click', async () => {
     try {
         await signInWithPopup(auth, googleProvider);
     } catch (error) {
-        alert("خطأ في تسجيل الدخول بواسطة Google: " + error.message);
+        Swal.fire({ icon: 'error', title: 'خطأ', text: error.message });
     }
 });
 
-// 3. التبديل بين وضع إنشاء الحساب وتسجيل الدخول
+// Toggle Auth Mode
 toggleAuthBtn.addEventListener('click', (e) => {
     e.preventDefault();
     isSignUpMode = !isSignUpMode;
     if (isSignUpMode) {
         authTitle.textContent = "إنشاء حساب جديد";
-        authBtn.textContent = "تسجيل الحساب";
+        authBtn.innerHTML = `<i class="fa-solid fa-user-plus me-1"></i> تسجيل الحساب`;
         toggleAuthText.textContent = "لديك حساب بالفعل؟";
         toggleAuthBtn.textContent = "تسجيل الدخول";
         nameFieldGroup.classList.remove('d-none');
     } else {
         authTitle.textContent = "تسجيل الدخول";
-        authBtn.textContent = "دخول";
+        authBtn.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> دخول`;
         toggleAuthText.textContent = "ليس لديك حساب؟";
         toggleAuthBtn.textContent = "إنشاء حساب جديد";
         nameFieldGroup.classList.add('d-none');
     }
 });
 
-// 4. معالجة التسجيل والدخول التقليدي بالبريد والكلمة السرية
+// Auth Form Submit
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('authEmail').value;
@@ -122,40 +148,36 @@ authForm.addEventListener('submit', async (e) => {
     try {
         if (isSignUpMode) {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            // حفظ الاسم الكامل داخل ملف البروفايل في Firebase
-            if (name) {
-                await updateProfile(userCredential.user, { displayName: name });
-            }
+            if (name) await updateProfile(userCredential.user, { displayName: name });
             window.location.reload();
         } else {
             await signInWithEmailAndPassword(auth, email, password);
         }
     } catch (error) {
-        alert("خطأ: " + error.message);
+        Swal.fire({ icon: 'error', title: 'خطأ في الدخول', text: error.message });
     }
 });
 
-// 5. تسجيل الخروج
 logoutBtn.addEventListener('click', () => signOut(auth));
 
-// 6. تغيير الشهر المحدد
 monthPicker.addEventListener('change', (e) => {
     currentMonth = e.target.value;
     listenToMonthData();
 });
 
-// 7. الاستماع للبيانات من Firestore وتحديثها لحظياً
+// --- 3. Data Sync ---
 function listenToMonthData() {
     if (!currentUser) return;
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
     onSnapshot(docRef, (docSnap) => {
         let data = { income: 0, transactions: [] };
         if (docSnap.exists()) data = docSnap.data();
+        activeTransactions = data.transactions || [];
         updateUI(data);
     });
 }
 
-// 8. إضافة مصروف جديد
+// Add Expense
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const desc = document.getElementById('descInput').value;
@@ -169,16 +191,15 @@ transactionForm.addEventListener('submit', async (e) => {
     currentData.transactions.push({
         id: Date.now(),
         date: new Date().toLocaleDateString('ar-EG'),
-        desc: desc,
-        amount: amount,
-        category: category
+        desc, amount, category
     });
 
     await setDoc(docRef, currentData);
     transactionForm.reset();
+    Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 1200, showConfirmButton: false });
 });
 
-// 9. حفظ الدخل الشهرى
+// Save Monthly Income
 saveIncomeBtn.addEventListener('click', async () => {
     const newIncome = parseFloat(monthlyIncomeInput.value) || 0;
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
@@ -187,20 +208,39 @@ saveIncomeBtn.addEventListener('click', async () => {
     currentData.income = newIncome;
     await setDoc(docRef, currentData);
     monthlyIncomeInput.value = '';
+    Swal.fire({ icon: 'success', title: 'تم حفظ الدخل', timer: 1200, showConfirmButton: false });
 });
 
-// 10. حذف مصروف
-window.deleteTransaction = async function(id) {
-    const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        let currentData = docSnap.data();
-        currentData.transactions = currentData.transactions.filter(t => t.id !== id);
-        await setDoc(docRef, currentData);
-    }
+// --- 4. Delete Confirmation Modal (SweetAlert2) ---
+window.deleteTransaction = function(id) {
+    Swal.fire({
+        title: 'هل أنت تأكد؟',
+        text: "سوف يتم حذف هذا المصروف بشكل نهائي!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'نعم، احذفه!',
+        cancelButtonText: 'إلغاء'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                let currentData = docSnap.data();
+                currentData.transactions = currentData.transactions.filter(t => t.id !== id);
+                await setDoc(docRef, currentData);
+                Swal.fire({ icon: 'success', title: 'تم الحذف بنجاح', timer: 1000, showConfirmButton: false });
+            }
+        }
+    });
 };
 
-// 11. تحديث الأرقام والرسوم البيانية في الشاشة
+// --- 5. Search & Filter Listeners ---
+searchInput.addEventListener('input', () => renderTable(activeTransactions));
+filterCategory.addEventListener('change', () => renderTable(activeTransactions));
+
+// --- 6. Render UI ---
 function updateUI(data) {
     const income = data.income || 0;
     const transactions = data.transactions || [];
@@ -216,19 +256,32 @@ function updateUI(data) {
 }
 
 function renderTable(transactions) {
+    const query = searchInput.value.trim().toLowerCase();
+    const catFilter = filterCategory.value;
+
+    const filtered = transactions.filter(t => {
+        const matchesQuery = t.desc.toLowerCase().includes(query);
+        const matchesCat = catFilter === 'ALL' || t.category === catFilter;
+        return matchesQuery && matchesCat;
+    });
+
     transactionsTableBody.innerHTML = '';
-    if (transactions.length === 0) {
-        transactionsTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">لا توجد مصاريف مسجلة لهذا الشهر.</td></tr>`;
+    if (filtered.length === 0) {
+        transactionsTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">لا توجد مصاريف مطابقة.</td></tr>`;
         return;
     }
-    transactions.forEach(t => {
+    filtered.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${t.date}</td>
-            <td>${t.desc}</td>
+            <td class="fw-bold">${t.desc}</td>
             <td><span class="badge bg-secondary">${t.category}</span></td>
             <td class="fw-bold text-danger">-${t.amount.toLocaleString()} ج.م</td>
-            <td><button onclick="deleteTransaction(${t.id})" class="btn btn-outline-danger btn-sm">✕</button></td>
+            <td>
+                <button onclick="deleteTransaction(${t.id})" class="btn btn-outline-danger btn-sm">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </td>
         `;
         transactionsTableBody.appendChild(tr);
     });
@@ -244,7 +297,7 @@ function renderCharts(income, expenses, transactions) {
         type: 'doughnut',
         data: {
             labels: Object.keys(categoryTotals),
-            datasets: [{ data: Object.values(categoryTotals), backgroundColor: ['#4318ff', '#6ad2ff', '#33d69f', '#ffb547', '#ff5b5b'] }]
+            datasets: [{ data: Object.values(categoryTotals), backgroundColor: ['#4318ff', '#6ad2ff', '#33d69f', '#ffb547', '#ff5b5b', '#a0aec0'] }]
         },
         options: { responsive: true, maintainAspectRatio: false }
     });
@@ -256,8 +309,8 @@ function renderCharts(income, expenses, transactions) {
         data: {
             labels: ['الميزانية'],
             datasets: [
-                { label: 'الدخل', data: [income], backgroundColor: '#05cd99', borderRadius: 8 },
-                { label: 'المصاريف', data: [expenses], backgroundColor: '#ee5d50', borderRadius: 8 }
+                { label: 'الدخل', data: [income], backgroundColor: '#10b981', borderRadius: 8 },
+                { label: 'المصاريف', data: [expenses], backgroundColor: '#ef4444', borderRadius: 8 }
             ]
         },
         options: { responsive: true, maintainAspectRatio: false }
