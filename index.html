@@ -113,98 +113,96 @@
                 </div>
             </div>
 
-            <!-- 2. نماذج الإدخال أولاً (الدخل + إضافة المصروف) -->
-            <div class="row g-4 mb-4">
-                <!-- Set Income Form -->
-                <div class="col-lg-4">
-                    <div class="card border shadow-sm p-4 h-100">
-                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-plus-circle text-primary"></i> تحديد دخل الشهر
-                        </h5>
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-semibold">قيمة الدخل الشهري</label>
-                            <div class="input-group">
-                                <input type="number" id="monthlyIncomeInput" class="form-control" placeholder="أدخل الدخل">
-                                <span class="input-group-text">ج.م</span>
-                            </div>
+            <!-- 2. نموذج تحديد الدخل الشهري -->
+            <div class="card border shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-primary"></i> تحديد دخل الشهر
+                </h5>
+                <div class="row align-items-end g-3">
+                    <div class="col-md-8">
+                        <label class="form-label text-muted small fw-semibold">قيمة الدخل الشهري</label>
+                        <div class="input-group">
+                            <input type="number" id="monthlyIncomeInput" class="form-control" placeholder="أدخل قيمة الدخل">
+                            <span class="input-group-text">ج.م</span>
                         </div>
-                        <button id="saveIncomeBtn" class="btn btn-primary w-100 fw-bold mt-auto">
+                    </div>
+                    <div class="col-md-4">
+                        <button id="saveIncomeBtn" class="btn btn-primary w-100 fw-bold">
                             <i class="fa-solid fa-floppy-disk me-1"></i> حفظ الدخل
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Add Expense Form -->
-                <div class="col-lg-8">
-                    <div class="card border shadow-sm p-4">
-                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-cart-plus text-danger"></i> إضافة مصروف جديد
-                        </h5>
-                        <form id="transactionForm" class="row g-3">
-                            <div class="col-md-5">
-                                <label class="form-label text-muted small fw-semibold">وصف المصروف</label>
-                                <input type="text" id="descInput" class="form-control" placeholder="مثال: شراء مستلزمات" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label text-muted small fw-semibold">المبلغ</label>
-                                <div class="input-group">
-                                    <input type="number" id="amountInput" class="form-control" placeholder="0" step="0.01" required>
-                                    <span class="input-group-text">ج.م</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label text-muted small fw-semibold">الفئة</label>
-                                <select id="categoryInput" class="form-select">
-                                    <option value="طعام">طعام ومشروبات</option>
-                                    <option value="تسوق">تسوق</option>
-                                    <option value="فواتير">فواتير وخدمات</option>
-                                    <option value="مواصلات">مواصلات</option>
-                                    <option value="صحة">صحة وعلاج</option>
-                                    <option value="أخرى">أخرى</option>
-                                </select>
-                            </div>
-                            <div class="col-12 text-end mt-4">
-                                <button type="submit" class="btn btn-danger fw-bold px-4">
-                                    <i class="fa-solid fa-plus me-1"></i> إضافة المصروف
-                                </button>
-                            </div>
-                        </form>
+            <!-- 3. بطاقات ملخص الأرقام (على شكل دوائر بجانب بعضها) -->
+            <div class="card border shadow-sm p-4 mb-4">
+                <div class="row text-center g-4 justify-content-center">
+                    <!-- دائرة الدخل -->
+                    <div class="col-12 col-md-4 d-flex flex-column align-items-center">
+                        <div class="circle-card border border-3 border-primary bg-primary-subtle text-primary mb-2">
+                            <i class="fa-solid fa-money-bill-wave fs-3 mb-1"></i>
+                            <span class="fs-7 fw-semibold">إجمالي الدخل</span>
+                            <h5 id="totalIncomeText" class="fw-bold mb-0 mt-1">0 ج.م</h5>
+                        </div>
+                    </div>
+
+                    <!-- دائرة المصاريف -->
+                    <div class="col-12 col-md-4 d-flex flex-column align-items-center">
+                        <div class="circle-card border border-3 border-danger bg-danger-subtle text-danger mb-2">
+                            <i class="fa-solid fa-receipt fs-3 mb-1"></i>
+                            <span class="fs-7 fw-semibold">إجمالي المصاريف</span>
+                            <h5 id="totalExpenseText" class="fw-bold mb-0 mt-1">0 ج.م</h5>
+                        </div>
+                    </div>
+
+                    <!-- دائرة المتبقي -->
+                    <div class="col-12 col-md-4 d-flex flex-column align-items-center">
+                        <div class="circle-card border border-3 border-success bg-success-subtle text-success mb-2">
+                            <i class="fa-solid fa-piggy-bank fs-3 mb-1"></i>
+                            <span class="fs-7 fw-semibold">الرصيد المتبقي</span>
+                            <h5 id="remainingText" class="fw-bold mb-0 mt-1">0 ج.م</h5>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. بطاقات ملخص الميزانية -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm bg-primary text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-semibold opacity-75">إجمالي الدخل</span>
-                            <i class="fa-solid fa-money-bill-wave fs-4 opacity-75"></i>
-                        </div>
-                        <h3 id="totalIncomeText" class="fw-bold mb-0">0 ج.م</h3>
+            <!-- 4. نموذج إضافة المصروف -->
+            <div class="card border shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-cart-plus text-danger"></i> إضافة مصروف جديد
+                </h5>
+                <form id="transactionForm" class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label text-muted small fw-semibold">وصف المصروف</label>
+                        <input type="text" id="descInput" class="form-control" placeholder="مثال: شراء مستلزمات" required>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm bg-danger text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-semibold opacity-75">إجمالي المصاريف</span>
-                            <i class="fa-solid fa-receipt fs-4 opacity-75"></i>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-semibold">المبلغ</label>
+                        <div class="input-group">
+                            <input type="number" id="amountInput" class="form-control" placeholder="0" step="0.01" required>
+                            <span class="input-group-text">ج.م</span>
                         </div>
-                        <h3 id="totalExpenseText" class="fw-bold mb-0">0 ج.م</h3>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm bg-success text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-semibold opacity-75">الرصيد المتبقي</span>
-                            <i class="fa-solid fa-piggy-bank fs-4 opacity-75"></i>
-                        </div>
-                        <h3 id="remainingText" class="fw-bold mb-0">0 ج.م</h3>
+                    <div class="col-md-4">
+                        <label class="form-label text-muted small fw-semibold">الفئة</label>
+                        <select id="categoryInput" class="form-select">
+                            <option value="طعام">طعام ومشروبات</option>
+                            <option value="تسوق">تسوق</option>
+                            <option value="فواتير">فواتير وخدمات</option>
+                            <option value="مواصلات">مواصلات</option>
+                            <option value="صحة">صحة وعلاج</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
                     </div>
-                </div>
+                    <div class="col-12 text-end mt-4">
+                        <button type="submit" class="btn btn-danger fw-bold px-4">
+                            <i class="fa-solid fa-plus me-1"></i> إضافة المصروف
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <!-- 4. الرسوم البيانية -->
+            <!-- 5. الرسوم البيانية -->
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
                     <div class="card border shadow-sm p-4">
@@ -224,7 +222,7 @@
                 </div>
             </div>
 
-            <!-- 5. جدول سجل المصروفات -->
+            <!-- 6. جدول سجل المصروفات -->
             <div class="card border shadow-sm p-4">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                     <h5 class="fw-bold mb-0">سجل المصروفات</h5>
