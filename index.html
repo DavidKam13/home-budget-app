@@ -99,7 +99,7 @@
 
         <!-- Main Content -->
         <main class="container py-4">
-            <!-- Header Controls & Greeting -->
+            <!-- 1. الترحيب واختيار الشهر -->
             <div class="row align-items-center mb-4">
                 <div class="col-md-6 mb-3 mb-md-0">
                     <h3 class="fw-bold mb-1">أهلاً بك، <span id="userNameDisplay" class="text-primary">المستخدم</span> 👋</h3>
@@ -113,40 +113,9 @@
                 </div>
             </div>
 
-            <!-- Dashboard Summary Cards -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm bg-primary text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-semibold opacity-75">إجمالي الدخل</span>
-                            <i class="fa-solid fa-money-bill-wave fs-4 opacity-75"></i>
-                        </div>
-                        <h3 id="totalIncomeText" class="fw-bold mb-0">0 ج.م</h3>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm bg-danger text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-semibold opacity-75">إجمالي المصاريف</span>
-                            <i class="fa-solid fa-receipt fs-4 opacity-75"></i>
-                        </div>
-                        <h3 id="totalExpenseText" class="fw-bold mb-0">0 ج.م</h3>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card border-0 shadow-sm bg-success text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="fw-semibold opacity-75">الرصيد المتبقي</span>
-                            <i class="fa-solid fa-piggy-bank fs-4 opacity-75"></i>
-                        </div>
-                        <h3 id="remainingText" class="fw-bold mb-0">0 ج.م</h3>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Income & Expense Forms Section (في الأعلى مباشرة) -->
+            <!-- 2. نماذج الإدخال أولاً (الدخل + إضافة المصروف) -->
             <div class="row g-4 mb-4">
-                <!-- Add Income Form -->
+                <!-- Set Income Form -->
                 <div class="col-lg-4">
                     <div class="card border shadow-sm p-4 h-100">
                         <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
@@ -204,7 +173,38 @@
                 </div>
             </div>
 
-            <!-- Charts Section -->
+            <!-- 3. بطاقات ملخص الميزانية -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-primary text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold opacity-75">إجمالي الدخل</span>
+                            <i class="fa-solid fa-money-bill-wave fs-4 opacity-75"></i>
+                        </div>
+                        <h3 id="totalIncomeText" class="fw-bold mb-0">0 ج.م</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-danger text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold opacity-75">إجمالي المصاريف</span>
+                            <i class="fa-solid fa-receipt fs-4 opacity-75"></i>
+                        </div>
+                        <h3 id="totalExpenseText" class="fw-bold mb-0">0 ج.م</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm bg-success text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold opacity-75">الرصيد المتبقي</span>
+                            <i class="fa-solid fa-piggy-bank fs-4 opacity-75"></i>
+                        </div>
+                        <h3 id="remainingText" class="fw-bold mb-0">0 ج.م</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. الرسوم البيانية -->
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
                     <div class="card border shadow-sm p-4">
@@ -224,7 +224,7 @@
                 </div>
             </div>
 
-            <!-- Transactions Table -->
+            <!-- 5. جدول سجل المصروفات -->
             <div class="card border shadow-sm p-4">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                     <h5 class="fw-bold mb-0">سجل المصروفات</h5>
