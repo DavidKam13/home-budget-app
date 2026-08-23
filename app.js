@@ -22,7 +22,7 @@ import {
 // 🟢 ضع كود firebaseConfig الخاص بك هنا 🟢
 // =========================================================
 const firebaseConfig = {
-    apiKey: "AIzaSyDZ6EhqJ7GgrSAoWaeUB_Z-4LhsQ785Mo4",
+     apiKey: "AIzaSyDZ6EhqJ7GgrSAoWaeUB_Z-4LhsQ785Mo4",
     authDomain: "home-budget-app-71cf0.firebaseapp.com",
     projectId: "home-budget-app-71cf0",
     storageBucket: "home-budget-app-71cf0.firebasestorage.app",
@@ -93,12 +93,16 @@ function toggleTheme() {
 
 function updateThemeIcons(theme) {
     const iconClass = theme === 'dark' ? 'fa-sun' : 'fa-moon';
-    document.getElementById('themeToggleAuth').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
-    document.getElementById('themeToggleApp').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+    const authIcon = document.getElementById('themeToggleAuth');
+    const appIcon = document.getElementById('themeToggleApp');
+    if (authIcon) authIcon.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+    if (appIcon) appIcon.innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
 }
 
-document.getElementById('themeToggleAuth').addEventListener('click', toggleTheme);
-document.getElementById('themeToggleApp').addEventListener('click', toggleTheme);
+const themeToggleAuth = document.getElementById('themeToggleAuth');
+const themeToggleApp = document.getElementById('themeToggleApp');
+if (themeToggleAuth) themeToggleAuth.addEventListener('click', toggleTheme);
+if (themeToggleApp) themeToggleApp.addEventListener('click', toggleTheme);
 initTheme();
 
 // --- 2. Auth State Observer ---
@@ -169,10 +173,22 @@ authForm.addEventListener('submit', async (e) => {
             await signInWithEmailAndPassword(auth, email, password);
         }
     } catch (error) {
-        let msg = 'حدث خطأ أثناء عملية الدخول.';
-        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') msg = 'البريد الإلكتروني أو كلمة السر غير صحيحة.';
-        if (error.code === 'auth/email-already-in-use') msg = 'البريد الإلكتروني مستخدم بالفعل.';
-        Swal.fire({ icon: 'error', title: 'خطأ', text: msg });
+        console.error("Auth Error Code:", error.code, error.message);
+        let msg = 'حدث خطأ أثناء العملية.';
+        
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+            msg = 'البريد الإلكتروني أو كلمة السر غير صحيحة.';
+        } else if (error.code === 'auth/email-already-in-use') {
+            msg = 'هذا البريد الإلكتروني مسجل بالفعل! حاول تسجيل الدخول بدلاً من إنشاء حساب جديد.';
+        } else if (error.code === 'auth/weak-password') {
+            msg = 'كلمة السر ضعيفة جداً. يرجى إدخال كلمة سر أقوى.';
+        } else if (error.code === 'auth/invalid-email') {
+            msg = 'صيغة البريد الإلكتروني غير صحيحة.';
+        } else {
+            msg = `خطأ: ${error.message}`;
+        }
+        
+        Swal.fire({ icon: 'error', title: 'خطأ في الحساب', text: msg });
     }
 });
 
