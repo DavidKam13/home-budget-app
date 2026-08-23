@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مرحباً بك في بيتي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+
+    <div class="onboarding-card theme-blue" id="mainContainer">
+        <!-- Slide 1: تحكم في مصاريف بيتك -->
+        <div class="slide active" id="slide1">
+            <div class="header-logo">
+                <i class="fa-solid fa-house-chimney-window logo-icon"></i>
+                <h2>بيتي</h2>
+                <p>إدارة مصاريف البيت بسهولة</p>
+            </div>
+            <div class="illustration">
+                <div class="circle-icon top-left"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="circle-icon top-right"><i class="fa-solid fa-receipt"></i></div>
+                <div class="circle-icon bottom-right"><i class="fa-solid fa-piggy-bank"></i></div>
+                <div class="main-house-illustration">
+                    <i class="fa-solid fa-house-user main-icon"></i>
+                </div>
+            </div>
+            <div class="slide-content">
+                <h3>تحكم في مصاريف بيتك</h3>
+                <p>سجل دخلك ومصاريفك، تابع رصيدك، واعرف فلوسك بتروح فين.</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: سجل مصاريفك -->
+        <div class="slide" id="slide2">
+            <div class="header-title">
+                <h2>سجل مصاريفك</h2>
+                <p>صنف مصاريفك حسب الفئات المختلفة وكن دائماً على اطلاع.</p>
+            </div>
+            <div class="illustration">
+                <div class="receipt-card">
+                    <div class="receipt-item"><i class="fa-solid fa-cart-shopping text-red"></i><span>1,250 ج</span></div>
+                    <div class="receipt-item"><i class="fa-solid fa-house text-red"></i><span>2,000 ج</span></div>
+                    <div class="receipt-item"><i class="fa-solid fa-car text-red"></i><span>750 ج</span></div>
+                    <div class="receipt-item"><i class="fa-solid fa-utensils text-red"></i><span>2,100 ج</span></div>
+                </div>
+            </div>
+            <div class="slide-content"></div>
+        </div>
+
+        <!-- Slide 3: تابع رصيدك بسهولة -->
+        <div class="slide" id="slide3">
+            <div class="header-title">
+                <h2>تابع رصيدك بسهولة</h2>
+                <p>اعرف رصيدك المتبقي في أي وقت وتابع تقدمك نحو أهدافك.</p>
+            </div>
+            <div class="illustration">
+                <div class="balance-card">
+                    <span class="label">الرصيد المتبقي</span>
+                    <h3 class="amount">6,500 <small>ج.م</small></h3>
+                    <div class="chart-line"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+            </div>
+            <div class="slide-content">
+                <h3>ابدأ رحلتك الآن</h3>
+                <p>كل ما تحتاجه لإدارة مصاريف بيتك في مكان واحد.</p>
+            </div>
+        </div>
+
+        <!-- Controls / Navigation Footer -->
+        <div class="controls-footer">
+            <button class="btn-text" id="skipOrBackBtn" onclick="handleBackOrSkip()">تخطي</button>
+            
+            <div class="dots-indicator">
+                <span class="dot active" onclick="goToSlide(1)"></span>
+                <span class="dot" onclick="goToSlide(2)"></span>
+                <span class="dot" onclick="goToSlide(3)"></span>
+            </div>
+
+            <button class="btn-action" id="nextBtn" onclick="nextSlide()">
+                <span>Next</span> <i class="fa-solid fa-chevron-left"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Global Footer -->
+    <div class="global-footer">
+        <i class="fa-solid fa-lock"></i> بياناتك آمنة ومحفوظة لدينا
+    </div>
+
+    <script src="onboarding.js"></script>
+</body>
+</html>
