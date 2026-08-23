@@ -134,10 +134,10 @@
                 </div>
             </div>
 
-           <!-- 3. بطاقات ملخص الأرقام (تصميم الدوائر الهرمي) -->
-<div class="summary-pyramid-container mb-4">
-    <!-- الدائرة العلوية: إجمالي الدخل -->
-    <div class="summary-row justify-content-center mb-3">
+          <!-- 3. بطاقات ملخص الأرقام (دوائر صغيرة بجانب بعضها) -->
+<div class="summary-horizontal-container mb-4">
+    <div class="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+        <!-- إجمالي الدخل -->
         <div class="stat-circle income-card">
             <div class="icon-badge bg-blue">
                 <i class="fa-solid fa-wallet"></i>
@@ -146,12 +146,9 @@
             <div class="divider-line bg-blue">
                 <span class="dot bg-blue"></span>
             </div>
-            <h4 id="totalIncomeText" class="stat-value text-blue mb-0">0 ج.م</h4>
+            <h5 id="totalIncomeText" class="stat-value text-blue mb-0">0 ج.م</h5>
         </div>
-    </div>
 
-    <!-- الدائرتان السفليتان: المصاريف والمتبقي -->
-    <div class="summary-row d-flex justify-content-center gap-4 flex-wrap">
         <!-- إجمالي المصاريف -->
         <div class="stat-circle expense-card">
             <div class="icon-badge bg-red">
@@ -161,7 +158,7 @@
             <div class="divider-line bg-red">
                 <span class="dot bg-red"></span>
             </div>
-            <h4 id="totalExpenseText" class="stat-value text-red mb-0">0 ج.م</h4>
+            <h5 id="totalExpenseText" class="stat-value text-red mb-0">0 ج.م</h5>
         </div>
 
         <!-- الرصيد المتبقي -->
@@ -173,7 +170,7 @@
             <div class="divider-line bg-green">
                 <span class="dot bg-green"></span>
             </div>
-            <h4 id="remainingText" class="stat-value text-green mb-0">0 ج.م</h4>
+            <h5 id="remainingText" class="stat-value text-green mb-0">0 ج.م</h5>
         </div>
     </div>
 </div>
