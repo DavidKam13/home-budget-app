@@ -64,3 +64,90 @@ body {
 .fs-7 {
     font-size: 0.85rem;
 }
+/* Pyramid Layout Container */
+.summary-pyramid-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+}
+
+/* Base Circle Styling */
+.stat-circle {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border: 3px solid;
+    padding-top: 25px;
+    transition: transform 0.25s ease;
+}
+
+.stat-circle:hover {
+    transform: translateY(-5px);
+}
+
+/* Colors & Borders */
+.income-card { border-color: #2563eb; }
+.expense-card { border-color: #dc2626; }
+.remaining-card { border-color: #16a34a; }
+
+.text-blue { color: #2563eb; }
+.text-red { color: #dc2626; }
+.text-green { color: #16a34a; }
+
+/* Floating Top Icon Badge */
+.icon-badge {
+    position: absolute;
+    top: -24px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.bg-blue { background-color: #2563eb; }
+.bg-red { background-color: #dc2626; }
+.bg-green { background-color: #16a34a; }
+
+/* Text & Divider Elements */
+.stat-title {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-top: 5px;
+}
+
+.stat-value {
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+.divider-line {
+    position: relative;
+    width: 90px;
+    height: 1px;
+    opacity: 0.3;
+    margin: 12px 0;
+}
+
+.divider-line .dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    opacity: 1;
+}
