@@ -44,3 +44,23 @@ body {
 .btn, .form-control, .form-select, .input-group-text {
     border-radius: 8px;
 }
+/* Circle Summary Cards */
+.circle-card {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.circle-card:hover {
+    transform: scale(1.05);
+}
+
+.fs-7 {
+    font-size: 0.85rem;
+}
