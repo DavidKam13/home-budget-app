@@ -38,14 +38,14 @@ function nextSlide() {
         updateSlideView();
     } else {
         // التحويل لصفحة التسجيل index.html عند الضغط على "ابدأ الآن"
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     }
 }
 
 function handleBackOrSkip() {
     if (currentSlide === 1) {
         // تخطي الشاشات ومباشرة لـ index.html
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     } else {
         currentSlide--;
         updateSlideView();
