@@ -1,121 +1,148 @@
+/* ==========================================
+   1. General Setup & Variables
+   ========================================== */
 :root {
-    --bs-font-sans-serif: 'Cairo', sans-serif;
+    --bg-body: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-color: #212529;
+    --border-color: #dee2e6;
+    --primary-blue: #2563eb;
+    --danger-red: #dc2626;
+    --success-green: #16a34a;
+}
+
+[data-bs-theme="dark"] {
+    --bg-body: #0f172a;
+    --card-bg: #1e293b;
+    --text-color: #f8fafc;
+    --border-color: #334155;
 }
 
 body {
     font-family: 'Cairo', sans-serif;
-    background-color: #f8fafc;
-    color: #334155;
+    background-color: var(--bg-body);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-[data-bs-theme="dark"] body {
-    background-color: #0f172a;
-    color: #e2e8f0;
-}
-
+/* ==========================================
+   2. Authentication Section
+   ========================================== */
 .auth-container {
-    background-color: #f1f5f9;
-}
-
-[data-bs-theme="dark"] .auth-container {
-    background-color: #020617;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(22, 163, 74, 0.05) 100%);
 }
 
 .auth-card {
     width: 100%;
-    max-width: 400px;
-    border-radius: 12px;
+    max-width: 420px;
+    border-radius: 16px;
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
 }
 
 .auth-icon-wrapper {
-    width: 50px;
-    height: 50px;
-    background-color: #e0f2fe;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(37, 99, 235, 0.1);
+    border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
 }
 
+.fs-7 {
+    font-size: 0.85rem;
+}
+
+/* ==========================================
+   3. Cards & Structure
+   ========================================== */
 .card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
     border-radius: 12px;
+    color: var(--text-color);
 }
 
-.btn, .form-control, .form-select, .input-group-text {
-    border-radius: 8px;
-}
-/* Horizontal Summary Container */
+/* ==========================================
+   4. Compact Horizontal Circle Summary Cards
+   ========================================== */
 .summary-horizontal-container {
-    padding: 15px 0;
+    padding: 15px 0 5px 0;
+    width: 100%;
 }
 
-/* Compact Circle Styling */
 .stat-circle {
-    position: relative;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    position: relative !important;
+    width: 110px !important;
+    height: 110px !important;
+    min-width: 110px !important;
+    min-height: 110px !important;
+    border-radius: 50% !important;
+    background-color: var(--card-bg) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     border: 2px solid;
-    padding-top: 15px;
-    transition: transform 0.2s ease;
+    padding-top: 10px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .stat-circle:hover {
     transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Colors & Borders */
-.income-card { border-color: #2563eb; }
-.expense-card { border-color: #dc2626; }
-.remaining-card { border-color: #16a34a; }
+/* Card Borders & Colors */
+.income-card { border-color: var(--primary-blue) !important; }
+.expense-card { border-color: var(--danger-red) !important; }
+.remaining-card { border-color: var(--success-green) !important; }
 
-.text-blue { color: #2563eb; }
-.text-red { color: #dc2626; }
-.text-green { color: #16a34a; }
+.text-blue { color: var(--primary-blue) !important; }
+.text-red { color: var(--danger-red) !important; }
+.text-green { color: var(--success-green) !important; }
 
-/* Compact Floating Top Icon Badge */
+/* Floating Top Icon Badge */
 .icon-badge {
-    position: absolute;
-    top: -16px;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-size: 1rem;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    position: absolute !important;
+    top: -14px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    font-size: 0.85rem !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.bg-blue { background-color: #2563eb; }
-.bg-red { background-color: #dc2626; }
-.bg-green { background-color: #16a34a; }
+.bg-blue { background-color: var(--primary-blue) !important; }
+.bg-red { background-color: var(--danger-red) !important; }
+.bg-green { background-color: var(--success-green) !important; }
 
-/* Text & Divider Elements */
+/* Typography & Separator inside Circles */
 .stat-title {
     font-weight: 700;
-    font-size: 0.82rem;
+    font-size: 0.72rem !important;
     margin-top: 2px;
+    white-space: nowrap;
 }
 
 .stat-value {
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.85rem !important;
+    white-space: nowrap;
 }
 
 .divider-line {
     position: relative;
-    width: 60px;
-    height: 1px;
+    width: 45px !important;
+    height: 1px !important;
     opacity: 0.3;
-    margin: 6px 0;
+    margin: 4px 0 !important;
 }
 
 .divider-line .dot {
@@ -123,8 +150,48 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 4px;
-    height: 4px;
+    width: 3px !important;
+    height: 3px !important;
     border-radius: 50%;
     opacity: 1;
+}
+
+/* ==========================================
+   5. Tables & Form Controls
+   ========================================== */
+.table {
+    color: var(--text-color) !important;
+}
+
+[data-bs-theme="dark"] .table-light {
+    background-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select,
+[data-bs-theme="dark"] .input-group-text {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .form-control::placeholder {
+    color: #94a3b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .stat-circle {
+        width: 95px !important;
+        height: 95px !important;
+        min-width: 95px !important;
+        min-height: 95px !important;
+    }
+    .stat-title {
+        font-size: 0.65rem !important;
+    }
+    .stat-value {
+        font-size: 0.75rem !important;
+    }
 }
