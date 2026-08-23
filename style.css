@@ -1,0 +1,120 @@
+:root {
+    --primary-color: #0d9488;
+    --primary-hover: #0f766e;
+    --bg-light: #f8fafc;
+    --card-radius: 16px;
+    --font-family: 'Cairo', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-light);
+    color: #334155;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode Tweaks */
+[data-bs-theme="dark"] {
+    --bg-light: #0f172a;
+    background-color: var(--bg-light);
+}
+
+/* Auth Cards */
+.auth-container {
+    background: linear-gradient(135deg, #0d948815 0%, #3b82f615 100%);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: var(--card-radius) !important;
+}
+
+.auth-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background-color: #0d948815;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* Stat Cards */
+.stat-card {
+    border-radius: var(--card-radius) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.stat-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Base Cards & Buttons */
+.card {
+    border-radius: var(--card-radius) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 260px;
+    width: 100%;
+}
+
+/* Custom Table Styling */
+.custom-table th {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #64748b;
+    border-bottom-width: 2px;
+}
+
+.custom-table td {
+    padding: 1rem 0.75rem;
+}
+
+/* Input Rounded Styling */
+.form-control, .form-select, .input-group-text {
+    border-radius: 10px;
+}
+
+.input-group > .form-control, 
+.input-group > .form-select, 
+.input-group > .input-group-text {
+    border-radius: 0;
+}
+
+.input-group > :first-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.input-group > :last-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
