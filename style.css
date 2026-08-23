@@ -44,53 +44,30 @@ body {
 .btn, .form-control, .form-select, .input-group-text {
     border-radius: 8px;
 }
-/* Circle Summary Cards */
-.circle-card {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Horizontal Summary Container */
+.summary-horizontal-container {
+    padding: 15px 0;
 }
 
-.circle-card:hover {
-    transform: scale(1.05);
-}
-
-.fs-7 {
-    font-size: 0.85rem;
-}
-/* Pyramid Layout Container */
-.summary-pyramid-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 0;
-}
-
-/* Base Circle Styling */
+/* Compact Circle Styling */
 .stat-circle {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
     background-color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
-    border: 3px solid;
-    padding-top: 25px;
-    transition: transform 0.25s ease;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    border: 2px solid;
+    padding-top: 15px;
+    transition: transform 0.2s ease;
 }
 
 .stat-circle:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
 }
 
 /* Colors & Borders */
@@ -102,19 +79,19 @@ body {
 .text-red { color: #dc2626; }
 .text-green { color: #16a34a; }
 
-/* Floating Top Icon Badge */
+/* Compact Floating Top Icon Badge */
 .icon-badge {
     position: absolute;
-    top: -24px;
-    width: 58px;
-    height: 58px;
+    top: -16px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    font-size: 1rem;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
 .bg-blue { background-color: #2563eb; }
@@ -124,21 +101,21 @@ body {
 /* Text & Divider Elements */
 .stat-title {
     font-weight: 700;
-    font-size: 1.15rem;
-    margin-top: 5px;
+    font-size: 0.82rem;
+    margin-top: 2px;
 }
 
 .stat-value {
     font-weight: 700;
-    font-size: 1.4rem;
+    font-size: 1rem;
 }
 
 .divider-line {
     position: relative;
-    width: 90px;
+    width: 60px;
     height: 1px;
     opacity: 0.3;
-    margin: 12px 0;
+    margin: 6px 0;
 }
 
 .divider-line .dot {
@@ -146,8 +123,8 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
     opacity: 1;
 }
