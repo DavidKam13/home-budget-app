@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة مصاريف المنزل السحابي</title>
+    <!-- Bootstrap RTL & FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2b3674;
+            --accent-blue: #4318ff;
+        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', system-ui, sans-serif; }
+        .dashboard-card { border: none; border-radius: 20px; background: var(--card-bg); box-shadow: 0px 18px 40px rgba(112, 144, 176, 0.12); transition: transform 0.2s ease; }
+        .icon-box { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .auth-container { max-width: 420px; margin: 80px auto; }
+    </style>
+</head>
+<body class="p-2 p-md-4">
+
+<!-- 1. شاشة تسجيل الدخول (تظهر تلقائياً إذا لم يكن المستخدم مسجلاً) -->
+<div id="authSection" class="container auth-container">
+    <div class="dashboard-card p-4 p-md-5 text-center">
+        <div class="icon-box bg-primary text-white mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+            <i class="fa-solid fa-house-lock"></i>
+        </div>
+        <h4 class="fw-bold mb-1" id="authTitle">تسجيل الدخول</h4>
+        <p class="text-muted small mb-4">ادخل على حسابك لإدارة مصاريف منزلك أونلاين</p>
+
+        <form id="authForm">
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold">البريد الإلكتروني</label>
+                <input type="email" id="authEmail" class="form-control" placeholder="name@example.com" required>
+            </div>
+            <div class="mb-3 text-start">
+                <label class="form-label small fw-bold">كلمة السر</label>
+                <input type="password" id="authPassword" class="form-control" placeholder="••••••••" required>
+            </div>
+            <button type="submit" id="authBtn" class="btn btn-primary w-100 py-2 fw-bold mb-3">دخول</button>
+        </form>
+
+        <div class="small">
+            <span id="toggleAuthText">ليس لديك حساب؟</span>
+            <a href="#" id="toggleAuthBtn" class="text-primary fw-bold text-decoration-none">إنشاء حساب جديد</a>
+        </div>
+    </div>
+</div>
+
+<!-- 2. لوحة التحكم الرئيسية (تظهر بعد تسجيل الدخول) -->
+<div id="appSection" class="container-fluid d-none" style="max-width: 1200px;">
+    
+    <!-- الشريط العلوي -->
+    <div class="dashboard-card p-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="icon-box bg-primary text-white"><i class="fa-solid fa-wallet"></i></div>
+            <div>
+                <h5 class="m-0 fw-bold">إدارة مصاريف المنزل</h5>
+                <small class="text-muted" id="userEmailDisplay">user@example.com</small>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <input type="month" id="monthPicker" class="form-control form-control-sm" style="width: 150px;">
+            <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#incomeModal">
+                <i class="fa-solid fa-pen me-1"></i> تعديل الدخل
+            </button>
+            <button class="btn btn-outline-danger btn-sm" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- البطاقات الإحصائية -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 d-flex align-items-center gap-3">
+                <div class="icon-box bg-success-subtle text-success fs-3"><i class="fa-solid fa-arrow-down-left"></i></div>
+                <div>
+                    <small class="text-muted fw-bold">إجمالي الدخل</small>
+                    <h3 class="text-success fw-bold m-0" id="totalIncomeText">0 ج.م</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 d-flex align-items-center gap-3">
+                <div class="icon-box bg-danger-subtle text-danger fs-3"><i class="fa-solid fa-arrow-up-right"></i></div>
+                <div>
+                    <small class="text-muted fw-bold">إجمالي المصاريف</small>
+                    <h3 class="text-danger fw-bold m-0" id="totalExpenseText">0 ج.م</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 d-flex align-items-center gap-3">
+                <div class="icon-box bg-primary-subtle text-primary fs-3"><i class="fa-solid fa-piggy-bank"></i></div>
+                <div>
+                    <small class="text-muted fw-bold">المتبقي صافي</small>
+                    <h3 class="text-primary fw-bold m-0" id="remainingText">0 ج.م</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج الإضافة والرسوم البيانية -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 h-100">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-plus-circle me-2 text-primary"></i>إضافة مصروف جديد</h6>
+                <form id="transactionForm">
+                    <div class="mb-2">
+                        <label class="form-label small">الوصف</label>
+                        <input type="text" id="descInput" class="form-control" placeholder="مثال: فاتورة الكهرباء" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">المبلغ</label>
+                        <input type="number" id="amountInput" class="form-control" placeholder="0.00" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small">الفئة</label>
+                        <select id="categoryInput" class="form-select">
+                            <option value="طعام وسوبرماركت">طعام وسوبرماركت</option>
+                            <option value="فواتير واشتراكات">فواتير واشتراكات</option>
+                            <option value="مواصلات وبنزين">مواصلات وبنزين</option>
+                            <option value="ترفيه">ترفيه</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">تسجيل المصروف</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 h-100">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-chart-pie me-2 text-primary"></i>توزيع المصاريف</h6>
+                <div style="height: 220px;">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card p-4 h-100">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-chart-column me-2 text-primary"></i>مقارنة الميزانية</h6>
+                <div style="height: 220px;">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- جدول أحدث العمليات -->
+    <div class="dashboard-card p-4">
+        <h6 class="fw-bold mb-3"><i class="fa-solid fa-list me-2 text-primary"></i>سجل المصاريف السحابي</h6>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>الوصف</th>
+                        <th>الفئة</th>
+                        <th>المبلغ</th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal تعديل الدخل -->
+<div class="modal fade" id="incomeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">تعديل الدخل الشهري السحابي</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">أدخل الدخل الإجمالي لهذا الشهر:</label>
+        <input type="number" id="monthlyIncomeInput" class="form-control" placeholder="15000">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary fw-bold" id="saveIncomeBtn" data-bs-dismiss="modal">حفظ أونلاين</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ربط كود Firebase -->
+<script type="module" src="app.js"></script>
+</body>
+</html>
