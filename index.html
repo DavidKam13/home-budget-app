@@ -134,37 +134,49 @@
                 </div>
             </div>
 
-            <!-- 3. بطاقات ملخص الأرقام (على شكل دوائر بجانب بعضها) -->
-            <div class="card border shadow-sm p-4 mb-4">
-                <div class="row text-center g-4 justify-content-center">
-                    <!-- دائرة الدخل -->
-                    <div class="col-12 col-md-4 d-flex flex-column align-items-center">
-                        <div class="circle-card border border-3 border-primary bg-primary-subtle text-primary mb-2">
-                            <i class="fa-solid fa-money-bill-wave fs-3 mb-1"></i>
-                            <span class="fs-7 fw-semibold">إجمالي الدخل</span>
-                            <h5 id="totalIncomeText" class="fw-bold mb-0 mt-1">0 ج.م</h5>
-                        </div>
-                    </div>
-
-                    <!-- دائرة المصاريف -->
-                    <div class="col-12 col-md-4 d-flex flex-column align-items-center">
-                        <div class="circle-card border border-3 border-danger bg-danger-subtle text-danger mb-2">
-                            <i class="fa-solid fa-receipt fs-3 mb-1"></i>
-                            <span class="fs-7 fw-semibold">إجمالي المصاريف</span>
-                            <h5 id="totalExpenseText" class="fw-bold mb-0 mt-1">0 ج.م</h5>
-                        </div>
-                    </div>
-
-                    <!-- دائرة المتبقي -->
-                    <div class="col-12 col-md-4 d-flex flex-column align-items-center">
-                        <div class="circle-card border border-3 border-success bg-success-subtle text-success mb-2">
-                            <i class="fa-solid fa-piggy-bank fs-3 mb-1"></i>
-                            <span class="fs-7 fw-semibold">الرصيد المتبقي</span>
-                            <h5 id="remainingText" class="fw-bold mb-0 mt-1">0 ج.م</h5>
-                        </div>
-                    </div>
-                </div>
+           <!-- 3. بطاقات ملخص الأرقام (تصميم الدوائر الهرمي) -->
+<div class="summary-pyramid-container mb-4">
+    <!-- الدائرة العلوية: إجمالي الدخل -->
+    <div class="summary-row justify-content-center mb-3">
+        <div class="stat-circle income-card">
+            <div class="icon-badge bg-blue">
+                <i class="fa-solid fa-wallet"></i>
             </div>
+            <span class="stat-title text-blue">إجمالي الدخل</span>
+            <div class="divider-line bg-blue">
+                <span class="dot bg-blue"></span>
+            </div>
+            <h4 id="totalIncomeText" class="stat-value text-blue mb-0">0 ج.م</h4>
+        </div>
+    </div>
+
+    <!-- الدائرتان السفليتان: المصاريف والمتبقي -->
+    <div class="summary-row d-flex justify-content-center gap-4 flex-wrap">
+        <!-- إجمالي المصاريف -->
+        <div class="stat-circle expense-card">
+            <div class="icon-badge bg-red">
+                <i class="fa-solid fa-receipt"></i>
+            </div>
+            <span class="stat-title text-red">إجمالي المصاريف</span>
+            <div class="divider-line bg-red">
+                <span class="dot bg-red"></span>
+            </div>
+            <h4 id="totalExpenseText" class="stat-value text-red mb-0">0 ج.م</h4>
+        </div>
+
+        <!-- الرصيد المتبقي -->
+        <div class="stat-circle remaining-card">
+            <div class="icon-badge bg-green">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <span class="stat-title text-green">الرصيد المتبقي</span>
+            <div class="divider-line bg-green">
+                <span class="dot bg-green"></span>
+            </div>
+            <h4 id="remainingText" class="stat-value text-green mb-0">0 ج.م</h4>
+        </div>
+    </div>
+</div>
 
             <!-- 4. نموذج إضافة المصروف -->
             <div class="card border shadow-sm p-4 mb-4">
