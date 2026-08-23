@@ -3,301 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الميزانية السحابي</title>
-    <!-- Bootstrap 5 RTL CSS -->
+    <title>إدارة الميزانية المنزلية</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 RTL -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SweetAlert2 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --card-radius: 16px;
-        }
-        [data-bs-theme="dark"] {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        }
-        body {
-            background: var(--bg-gradient);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.3s ease;
-        }
-        .main-content { flex: 1; }
-        .card {
-            border: none;
-            border-radius: var(--card-radius);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-        .stat-card {
-            border-bottom: 4px solid transparent;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-        .income-border { border-color: #10b981 !important; }
-        .expense-border { border-color: #ef4444 !important; }
-        .remaining-border { border-color: #3b82f6 !important; }
-        .auth-card {
-            max-width: 440px;
-            margin: 40px auto;
-        }
-        .theme-toggle-btn {
-            border-radius: 50px;
-            padding: 6px 14px;
-        }
-    </style>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="main-content">
-        <!-- 1. شاشة تسجيل الدخول / إنشاء حساب -->
-        <div id="authSection" class="container">
-            <div class="card auth-card p-4 my-5">
-                <div class="d-flex justify-content-end">
-                    <button class="btn btn-outline-secondary btn-sm theme-toggle-btn" id="themeToggleAuth">
-                        <i class="fa-solid fa-moon"></i>
-                    </button>
+    <!-- Auth Section -->
+    <section id="authSection" class="auth-container d-flex align-items-center justify-content-center min-vh-100">
+        <div class="card auth-card shadow-lg p-4 border-0">
+            <div class="text-end mb-2">
+                <button id="themeToggleAuth" class="btn btn-sm btn-outline-secondary rounded-circle">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+            <div class="text-center mb-4">
+                <div class="auth-icon-wrapper mb-3">
+                    <i class="fa-solid fa-wallet fa-2x text-primary"></i>
                 </div>
-                <div class="text-center mb-4">
-                    <div class="mb-3 text-primary">
-                        <i class="fa-solid fa-wallet fa-3x"></i>
+                <h3 id="authTitle" class="fw-bold mb-1">إنشاء حساب جديد</h3>
+                <p class="text-muted small">مرحباً بك! قم بتسجيل الدخول لإدارة ميزانيتك بسهولة</p>
+            </div>
+
+            <form id="authForm">
+                <div id="nameFieldGroup" class="mb-3">
+                    <label class="form-label fw-semibold">الاسم</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="authName" class="form-control" placeholder="د. ديفيد كمال">
                     </div>
-                    <h3 id="authTitle" class="fw-bold">إنشاء حساب جديد</h3>
-                    <p class="text-muted small"> قم بإدارة ميزانيتك ومصاريفك بسهولة وأمان </p>
                 </div>
-
-                <form id="authForm">
-                    <div class="mb-3" id="nameFieldGroup">
-                        <label class="form-label fw-bold">الأسم</label>
-                        <input type="text" id="authName" class="form-control" placeholder="ديفيد كمال">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">البريد الإلكتروني</label>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">البريد الإلكتروني</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
                         <input type="email" id="authEmail" class="form-control" placeholder="name@example.com" required>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">كلمة السر</label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">كلمة السر</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
                         <input type="password" id="authPassword" class="form-control" placeholder="••••••••" required>
                     </div>
-
-                    <button type="submit" id="authBtn" class="btn btn-primary w-100 py-2 fw-bold">
-                        <i class="fa-solid fa-user-plus me-1"></i> تسجيل الحساب
-                    </button>
-                </form>
-
-                <div class="text-center my-3 position-relative">
-                    <hr>
-                    <span class="position-absolute top-50 start-50 translate-middle bg-body px-2 text-muted small">أو</span>
                 </div>
-
-                <button type="button" id="googleAuthBtn" class="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center gap-2 py-2">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
-                    <span>التسجيل بواسطة Google</span>
+                <button type="submit" id="authBtn" class="btn btn-primary w-100 py-2 fw-bold mb-3 shadow-sm">
+                    <i class="fa-solid fa-user-plus me-1"></i> تسجيل الحساب
                 </button>
+            </form>
 
-                <div class="text-center mt-4">
-                    <span id="toggleAuthText" class="text-muted">لديك حساب بالفعل؟</span>
-                    <a href="#" id="toggleAuthBtn" class="text-primary fw-bold text-decoration-none ms-1">تسجيل الدخول</a>
-                </div>
+            <div class="text-center position-relative my-3">
+                <hr class="text-muted">
+                <span class="position-absolute top-50 start-50 translate-middle bg-body px-3 text-muted small">أو</span>
+            </div>
+
+            <button id="googleAuthBtn" class="btn btn-outline-secondary w-100 py-2 fw-semibold mb-4 d-flex align-items-center justify-content-center gap-2">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+                المتابعة باستخدام Google
+            </button>
+
+            <div class="text-center fs-7">
+                <span id="toggleAuthText" class="text-muted">لديك حساب بالفعل؟</span>
+                <a href="#" id="toggleAuthBtn" class="fw-bold text-decoration-none ms-1">تسجيل الدخول</a>
             </div>
         </div>
+    </section>
 
-        <!-- 2. الواجهة الرئيسية للتطبيق -->
-        <div id="appSection" class="container py-4 d-none">
-            <!-- الهيدر والترحيب والوضع الداكن -->
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 bg-body p-3 rounded-4 shadow-sm">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-circle-user fa-2x text-primary"></i>
-                    <span class="fw-bold fs-5">أهلاً بك، <span id="userNameDisplay" class="text-primary">المستخدم</span>! 👋</span>
-                </div>
-                <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-                    <button class="btn btn-outline-secondary btn-sm theme-toggle-btn me-2" id="themeToggleApp">
+    <!-- App Dashboard Section -->
+    <section id="appSection" class="d-none">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg bg-body shadow-sm sticky-top py-3">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-primary fs-4" href="#">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>ميزانيتي</span>
+                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <button id="themeToggleApp" class="btn btn-sm btn-outline-secondary rounded-circle">
                         <i class="fa-solid fa-moon"></i>
                     </button>
-                    <input type="month" id="monthPicker" class="form-control form-control-sm">
-                    <button id="logoutBtn" class="btn btn-outline-danger btn-sm">
+                    <div class="user-profile-badge d-flex align-items-center gap-2 bg-body-tertiary px-3 py-1 rounded-pill border">
+                        <i class="fa-solid fa-circle-user text-primary fs-5"></i>
+                        <span id="userNameDisplay" class="fw-semibold">المستخدم</span>
+                    </div>
+                    <button id="logoutBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3">
                         <i class="fa-solid fa-right-from-bracket me-1"></i> خروج
                     </button>
                 </div>
             </div>
+        </nav>
 
-            <!-- أ) تحديد الدخل الشهرى (المكان الجديد أولاً) -->
-            <div class="card p-3 mb-4 bg-body">
-                <div class="row align-items-center g-3">
-                    <div class="col-md-4">
-                        <h5 class="fw-bold m-0 text-primary">
-                            <i class="fa-solid fa-money-bill-wave me-2"></i>تحديد الدخل الشهرى
-                        </h5>
-                        <small class="text-muted">أدخل راتبك أو إجمالي دخلك لهذا الشهر</small>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fa-solid fa-coins"></i></span>
-                            <input type="number" id="monthlyIncomeInput" class="form-control" placeholder="أدخل مبلغ الدخل الشهرى">
-                            <button id="saveIncomeBtn" class="btn btn-success px-4 fw-bold">
-                                <i class="fa-solid fa-floppy-disk me-1"></i> حفظ الدخل
-                            </button>
-                        </div>
+        <!-- Main Content -->
+        <main class="container py-4">
+            <!-- Header Controls -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h2 class="fw-bold mb-1">لوحة التحكم المالية</h2>
+                    <p class="text-muted mb-0">تابع مصاريفك ودخلك الشهري بكل سهولة</p>
+                </div>
+                <div class="col-md-6 d-flex justify-content-md-end">
+                    <div class="input-group date-picker-group shadow-sm" style="max-width: 250px;">
+                        <span class="input-group-text bg-primary text-white"><i class="fa-solid fa-calendar-days"></i></span>
+                        <input type="month" id="monthPicker" class="form-control fw-bold text-center">
                     </div>
                 </div>
             </div>
 
-            <!-- ب) كروت الإحصائيات -->
+            <!-- Dashboard Summary Cards -->
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
-                    <div class="card stat-card income-border p-3 bg-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="text-muted small">إجمالي الدخل</span>
-                                <h3 id="totalIncomeText" class="text-success fw-bold my-1">0 ج.م</h3>
-                            </div>
-                            <div class="p-3 bg-success bg-opacity-10 rounded-circle text-success">
-                                <i class="fa-solid fa-arrow-down-left fa-lg"></i>
+                    <div class="card stat-card border-0 shadow-sm bg-primary text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold opacity-75">إجمالي الدخل</span>
+                            <div class="stat-icon bg-white bg-opacity-20 rounded-circle p-2">
+                                <i class="fa-solid fa-money-bill-wave"></i>
                             </div>
                         </div>
+                        <h3 id="totalIncomeText" class="fw-bold mb-0">0 ج.م</h3>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card stat-card expense-border p-3 bg-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="text-muted small">إجمالي المصاريف</span>
-                                <h3 id="totalExpenseText" class="text-danger fw-bold my-1">0 ج.م</h3>
-                            </div>
-                            <div class="p-3 bg-danger bg-opacity-10 rounded-circle text-danger">
-                                <i class="fa-solid fa-arrow-up-right fa-lg"></i>
+                    <div class="card stat-card border-0 shadow-sm bg-danger text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold opacity-75">إجمالي المصاريف</span>
+                            <div class="stat-icon bg-white bg-opacity-20 rounded-circle p-2">
+                                <i class="fa-solid fa-receipt"></i>
                             </div>
                         </div>
+                        <h3 id="totalExpenseText" class="fw-bold mb-0">0 ج.م</h3>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card stat-card remaining-border p-3 bg-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="text-muted small">المتبقي</span>
-                                <h3 id="remainingText" class="text-primary fw-bold my-1">0 ج.م</h3>
-                            </div>
-                            <div class="p-3 bg-primary bg-opacity-10 rounded-circle text-primary">
-                                <i class="fa-solid fa-scale-balanced fa-lg"></i>
+                    <div class="card stat-card border-0 shadow-sm bg-success text-white p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold opacity-75">الرصيد المتبقي</span>
+                            <div class="stat-icon bg-white bg-opacity-20 rounded-circle p-2">
+                                <i class="fa-solid fa-piggy-bank"></i>
                             </div>
                         </div>
+                        <h3 id="remainingText" class="fw-bold mb-0">0 ج.م</h3>
                     </div>
                 </div>
             </div>
 
-            <!-- ج) إضافة مصروف جديد -->
-            <div class="card p-3 mb-4 bg-body">
-                <h5 class="fw-bold mb-3 text-secondary">
-                    <i class="fa-solid fa-cart-plus me-2"></i>إضافة مصروف جديد
-                </h5>
-                <form id="transactionForm" class="row g-2">
-                    <div class="col-md-4">
-                        <input type="text" id="descInput" class="form-control" placeholder="الوصف (مثلاً: إيجار، سوبرماركت)" required>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" id="amountInput" class="form-control" placeholder="المبلغ" required>
-                    </div>
-                    <div class="col-md-3">
-                        <select id="categoryInput" class="form-select">
-                            <option value="سكن">سكن</option>
-                            <option value="طعام">طعام</option>
-                            <option value="فواتير">فواتير</option>
-                            <option value="مواصلات">مواصلات</option>
-                            <option value="ترفيه">ترفيه</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100 fw-bold">
-                            <i class="fa-solid fa-plus me-1"></i> إضافة
+            <!-- Forms Section -->
+            <div class="row g-4 mb-4">
+                <!-- Add Income Form -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm p-4 h-100">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-primary"></i> تحديد دخل الشهر
+                        </h5>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-semibold">قيمة الدخل الشهري</label>
+                            <div class="input-group">
+                                <input type="number" id="monthlyIncomeInput" class="form-control" placeholder="أدخل الدخل">
+                                <span class="input-group-text">ج.م</span>
+                            </div>
+                        </div>
+                        <button id="saveIncomeBtn" class="btn btn-primary w-100 fw-bold mt-auto">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> حفظ الدخل
                         </button>
                     </div>
-                </form>
+                </div>
+
+                <!-- Add Expense Form -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm p-4">
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-cart-plus text-danger"></i> إضافة مصروف جديد
+                        </h5>
+                        <form id="transactionForm" class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label text-muted small fw-semibold">وصف المصروف</label>
+                                <input type="text" id="descInput" class="form-control" placeholder="مثال: شراء مستلزمات" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small fw-semibold">المبلغ</label>
+                                <div class="input-group">
+                                    <input type="number" id="amountInput" class="form-control" placeholder="0" step="0.01" required>
+                                    <span class="input-group-text">ج.م</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small fw-semibold">الفئة</label>
+                                <select id="categoryInput" class="form-select">
+                                    <option value="طعام">طعام ومشروبات</option>
+                                    <option value="تسوق">تسوق</option>
+                                    <option value="فواتير">فواتير وخدمات</option>
+                                    <option value="مواصلات">مواصلات</option>
+                                    <option value="صحة">صحة وعلاج</option>
+                                    <option value="أخرى">أخرى</option>
+                                </select>
+                            </div>
+                            <div class="col-12 text-end mt-4">
+                                <button type="submit" class="btn btn-danger fw-bold px-4">
+                                    <i class="fa-solid fa-plus me-1"></i> إضافة المصروف
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-            <!-- د) الرسوم البيانية -->
+            <!-- Charts Section -->
             <div class="row g-4 mb-4">
                 <div class="col-md-6">
-                    <div class="card p-3 bg-body">
-                        <h6 class="fw-bold text-muted mb-3"><i class="fa-chart-pie me-2"></i>توزيع المصاريف حسب الفئة</h6>
-                        <div style="height: 250px;">
+                    <div class="card border-0 shadow-sm p-4 chart-card">
+                        <h6 class="fw-bold mb-3">توزيع المصاريف حسب الفئة</h6>
+                        <div class="chart-container">
                             <canvas id="categoryChart"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card p-3 bg-body">
-                        <h6 class="fw-bold text-muted mb-3"><i class="fa-chart-column me-2"></i>مقارنة الدخل بالمصاريف</h6>
-                        <div style="height: 250px;">
+                    <div class="card border-0 shadow-sm p-4 chart-card">
+                        <h6 class="fw-bold mb-3">مقارنة الدخل بالمصاريف</h6>
+                        <div class="chart-container">
                             <canvas id="comparisonChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- هـ) جدول المصاريف مع البحث والفلترة -->
-            <div class="card p-3 mb-4 bg-body">
-                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-                    <h5 class="fw-bold text-secondary mb-0">
-                        <i class="fa-solid fa-receipt me-2"></i>سجل المصاريف
-                    </h5>
-                    <!-- شريط البحث والفلترة -->
-                    <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0" style="max-width: 450px;">
-                        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="بحث بالاسم...">
-                        <select id="filterCategory" class="form-select form-select-sm">
+            <!-- Transactions Table -->
+            <div class="card border-0 shadow-sm p-4">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <h5 class="fw-bold mb-0">سجل المصروفات</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="بحث بالوصف..." style="max-width: 200px;">
+                        <select id="filterCategory" class="form-select form-select-sm" style="max-width: 160px;">
                             <option value="ALL">جميع الفئات</option>
-                            <option value="سكن">سكن</option>
-                            <option value="طعام">طعام</option>
-                            <option value="فواتير">فواتير</option>
+                            <option value="طعام">طعام ومشروبات</option>
+                            <option value="تسوق">تسوق</option>
+                            <option value="فواتير">فواتير وخدمات</option>
                             <option value="مواصلات">مواصلات</option>
-                            <option value="ترفيه">ترفيه</option>
+                            <option value="صحة">صحة وعلاج</option>
                             <option value="أخرى">أخرى</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
+                    <table class="table table-hover align-middle custom-table mb-0">
+                        <thead>
                             <tr>
                                 <th>التاريخ</th>
                                 <th>الوصف</th>
                                 <th>الفئة</th>
                                 <th>المبلغ</th>
-                                <th>إجراء</th>
+                                <th class="text-center">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="transactionsTableBody">
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">لا توجد مصاريف مسجلة لهذا الشهر.</td>
-                            </tr>
+                            <!-- Populated via JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
+        </main>
+    </section>
 
-    <!-- حقوق الملكية Footer -->
-    <footer class="text-center py-3 text-muted border-top mt-auto bg-body" style="font-size: 0.9rem;">
-        Powered by <strong>Dr. David Kamal</strong> &copy; 2026 | All Rights Reserved
-    </footer>
-
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Bootstrap 5 JS -->
+    <!-- Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS File -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
