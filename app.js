@@ -1,9 +1,11 @@
-// استيراد مكتبات Firebase السحابية
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getAuth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    updateProfile,
     signOut, 
     onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -16,7 +18,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // =========================================================
-// 🟢 ضع كود firebaseConfig الخاص بك هنا بين القوسين 🟢
+// 🟢 ضع كود firebaseConfig الخاص بك هنا 🟢
 // =========================================================
 const firebaseConfig = {
      apiKey: "AIzaSyDZ6EhqJ7GgrSAoWaeUB_Z-4LhsQ785Mo4",
@@ -32,15 +34,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
 // المتغيرات العامة
 let currentUser = null;
 let currentMonth = new Date().toISOString().slice(0, 7);
 let categoryChartInstance = null;
 let comparisonChartInstance = null;
-let isSignUpMode = false;
+let isSignUpMode = true; // وضع إنشاء الحساب هو الافتراضي لعرض حقل الاسم
 
-// عناصر DOM
+// عناصر الواجهة (DOM)
 const authSection = document.getElementById('authSection');
 const appSection = document.getElementById('appSection');
 const authForm = document.getElementById('authForm');
@@ -48,7 +51,9 @@ const authTitle = document.getElementById('authTitle');
 const authBtn = document.getElementById('authBtn');
 const toggleAuthBtn = document.getElementById('toggleAuthBtn');
 const toggleAuthText = document.getElementById('toggleAuthText');
-const userEmailDisplay = document.getElementById('userEmailDisplay');
+const nameFieldGroup = document.getElementById('nameFieldGroup');
+const googleAuthBtn = document.getElementById('googleAuthBtn');
+const userNameDisplay = document.getElementById('userNameDisplay');
 const logoutBtn = document.getElementById('logoutBtn');
 
 const monthPicker = document.getElementById('monthPicker');
@@ -60,11 +65,14 @@ const transactionsTableBody = document.getElementById('transactionsTableBody');
 const monthlyIncomeInput = document.getElementById('monthlyIncomeInput');
 const saveIncomeBtn = document.getElementById('saveIncomeBtn');
 
-// 1. مراقبة حالة تسجيل الدخول تلقائياً
+// 1. مراقبة حالة تسجيل الدخول وتحديث اسم المستخدم
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        userEmailDisplay.textContent = user.email;
+        // عرض الاسم المسجل، أو الاسم من حساب Google، أو الجزء الأول من الإيميل
+        const displayName = user.displayName || user.email.split('@')[0];
+        userNameDisplay.textContent = displayName;
+
         authSection.classList.add('d-none');
         appSection.classList.remove('d-none');
         monthPicker.value = currentMonth;
@@ -76,7 +84,16 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 2. التبديل بين الدخول وإنشاء حساب جديد
+// 2. التسجيل والولوج باستخدام Google
+googleAuthBtn.addEventListener('click', async () => {
+    try {
+        await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+        alert("خطأ في تسجيل الدخول بواسطة Google: " + error.message);
+    }
+});
+
+// 3. التبديل بين وضع إنشاء الحساب وتسجيل الدخول
 toggleAuthBtn.addEventListener('click', (e) => {
     e.preventDefault();
     isSignUpMode = !isSignUpMode;
@@ -85,56 +102,60 @@ toggleAuthBtn.addEventListener('click', (e) => {
         authBtn.textContent = "تسجيل الحساب";
         toggleAuthText.textContent = "لديك حساب بالفعل؟";
         toggleAuthBtn.textContent = "تسجيل الدخول";
+        nameFieldGroup.classList.remove('d-none');
     } else {
         authTitle.textContent = "تسجيل الدخول";
         authBtn.textContent = "دخول";
         toggleAuthText.textContent = "ليس لديك حساب؟";
         toggleAuthBtn.textContent = "إنشاء حساب جديد";
+        nameFieldGroup.classList.add('d-none');
     }
 });
 
-// التعامل مع نموذج التسجيل والطلب
+// 4. معالجة التسجيل والدخول التقليدي بالبريد والكلمة السرية
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('authEmail').value;
     const password = document.getElementById('authPassword').value;
+    const name = document.getElementById('authName').value;
 
     try {
         if (isSignUpMode) {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            // حفظ الاسم الكامل داخل ملف البروفايل في Firebase
+            if (name) {
+                await updateProfile(userCredential.user, { displayName: name });
+            }
+            window.location.reload();
         } else {
             await signInWithEmailAndPassword(auth, email, password);
         }
     } catch (error) {
-        alert("خطأ في عملية الدخول: " + error.message);
+        alert("خطأ: " + error.message);
     }
 });
 
-// تسجيل الخروج
+// 5. تسجيل الخروج
 logoutBtn.addEventListener('click', () => signOut(auth));
 
-// تغيير الشهر المحدد
+// 6. تغيير الشهر المحدد
 monthPicker.addEventListener('change', (e) => {
     currentMonth = e.target.value;
     listenToMonthData();
 });
 
-// 3. المزامنة اللحظية مع قاعدة بيانات Firestore
+// 7. الاستماع للبيانات من Firestore وتحديثها لحظياً
 function listenToMonthData() {
     if (!currentUser) return;
-
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
-
     onSnapshot(docRef, (docSnap) => {
         let data = { income: 0, transactions: [] };
-        if (docSnap.exists()) {
-            data = docSnap.data();
-        }
+        if (docSnap.exists()) data = docSnap.data();
         updateUI(data);
     });
 }
 
-// 4. إضافة مصروف جديد
+// 8. إضافة مصروف جديد
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const desc = document.getElementById('descInput').value;
@@ -143,41 +164,35 @@ transactionForm.addEventListener('submit', async (e) => {
 
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
     const docSnap = await getDoc(docRef);
-
     let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
 
-    const newTransaction = {
+    currentData.transactions.push({
         id: Date.now(),
         date: new Date().toLocaleDateString('ar-EG'),
         desc: desc,
         amount: amount,
         category: category
-    };
+    });
 
-    currentData.transactions.push(newTransaction);
     await setDoc(docRef, currentData);
-
     transactionForm.reset();
 });
 
-// 5. حفظ وتحديث الدخل الشهري
+// 9. حفظ الدخل الشهرى
 saveIncomeBtn.addEventListener('click', async () => {
     const newIncome = parseFloat(monthlyIncomeInput.value) || 0;
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
     const docSnap = await getDoc(docRef);
-
     let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
     currentData.income = newIncome;
-
     await setDoc(docRef, currentData);
     monthlyIncomeInput.value = '';
 });
 
-// 6. حذف مصروف
+// 10. حذف مصروف
 window.deleteTransaction = async function(id) {
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
     const docSnap = await getDoc(docRef);
-
     if (docSnap.exists()) {
         let currentData = docSnap.data();
         currentData.transactions = currentData.transactions.filter(t => t.id !== id);
@@ -185,7 +200,7 @@ window.deleteTransaction = async function(id) {
     }
 };
 
-// 7. تحديث واجهة المستخدم والرسوم البيانية
+// 11. تحديث الأرقام والرسوم البيانية في الشاشة
 function updateUI(data) {
     const income = data.income || 0;
     const transactions = data.transactions || [];
