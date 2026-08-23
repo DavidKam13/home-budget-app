@@ -45,20 +45,19 @@ body {
 
 .slide-image-container {
     width: 100%;
-    height: 260px; /* تقليل الارتفاع المخصص للحاضنة لتناسب الموبايل */
+    height: 220px; /* تقطيع مساحة ثابتة وصغيرة للصورة */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    margin-bottom: 10px;
 }
 
 .slide-img {
-    max-width: 85%;    /* منع الصورة من أخذ العرض بالكامل وترك مسافة بالجانبين */
-    max-height: 100%;  /* ضبط الارتفاع ليبقى داخل الحدود */
-    object-fit: contain; /* الحفاظ على أبعاد الصورة الأصلية بدون تشوه */
-    filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.06)); /* إضافة ظل خفيف جمالي */
+    width: 100% !important;
+    height: 200px !important; /* فرض ارتفاع صغير يناسب الموبايل تماماً */
+    max-height: 200px !important;
+    object-fit: contain !important; /* لكي تظهر الصورة كاملة دون أن يتم قصها */
 }
-
 .slide-content h3 {
     font-weight: 800;
     font-size: 1.4rem;
