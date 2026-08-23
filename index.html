@@ -11,20 +11,11 @@
 <body>
 
     <div class="onboarding-card theme-blue" id="mainContainer">
-        <!-- Slide 1: تحكم في مصاريف بيتك -->
+        
+        <!-- Slide 1 -->
         <div class="slide active" id="slide1">
-            <div class="header-logo">
-                <i class="fa-solid fa-house-chimney-window logo-icon"></i>
-                <h2>بيتي</h2>
-                <p>إدارة مصاريف البيت بسهولة</p>
-            </div>
-            <div class="illustration">
-                <div class="circle-icon top-left"><i class="fa-solid fa-chart-line"></i></div>
-                <div class="circle-icon top-right"><i class="fa-solid fa-receipt"></i></div>
-                <div class="circle-icon bottom-right"><i class="fa-solid fa-piggy-bank"></i></div>
-                <div class="main-house-illustration">
-                    <i class="fa-solid fa-house-user main-icon"></i>
-                </div>
+            <div class="slide-image-container">
+                <img src="slide1.png" alt="تحكم في مصاريف بيتك" class="slide-img">
             </div>
             <div class="slide-content">
                 <h3>تحكم في مصاريف بيتك</h3>
@@ -32,43 +23,29 @@
             </div>
         </div>
 
-        <!-- Slide 2: سجل مصاريفك -->
+        <!-- Slide 2 -->
         <div class="slide" id="slide2">
-            <div class="header-title">
-                <h2>سجل مصاريفك</h2>
-                <p>صنف مصاريفك حسب الفئات المختلفة وكن دائماً على اطلاع.</p>
-            </div>
-            <div class="illustration">
-                <div class="receipt-card">
-                    <div class="receipt-item"><i class="fa-solid fa-cart-shopping text-red"></i><span>1,250 ج</span></div>
-                    <div class="receipt-item"><i class="fa-solid fa-house text-red"></i><span>2,000 ج</span></div>
-                    <div class="receipt-item"><i class="fa-solid fa-car text-red"></i><span>750 ج</span></div>
-                    <div class="receipt-item"><i class="fa-solid fa-utensils text-red"></i><span>2,100 ج</span></div>
-                </div>
-            </div>
-            <div class="slide-content"></div>
-        </div>
-
-        <!-- Slide 3: تابع رصيدك بسهولة -->
-        <div class="slide" id="slide3">
-            <div class="header-title">
-                <h2>تابع رصيدك بسهولة</h2>
-                <p>اعرف رصيدك المتبقي في أي وقت وتابع تقدمك نحو أهدافك.</p>
-            </div>
-            <div class="illustration">
-                <div class="balance-card">
-                    <span class="label">الرصيد المتبقي</span>
-                    <h3 class="amount">6,500 <small>ج.م</small></h3>
-                    <div class="chart-line"><i class="fa-solid fa-chart-line"></i></div>
-                </div>
+            <div class="slide-image-container">
+                <img src="slide2.png" alt="سجل مصاريفك" class="slide-img">
             </div>
             <div class="slide-content">
-                <h3>ابدأ رحلتك الآن</h3>
-                <p>كل ما تحتاجه لإدارة مصاريف بيتك في مكان واحد.</p>
+                <h3>سجل مصاريفك</h3>
+                <p>صنف مصاريفك حسب الفئات المختلفة وكن دائماً على اطلاع.</p>
             </div>
         </div>
 
-        <!-- Controls / Navigation Footer -->
+        <!-- Slide 3 -->
+        <div class="slide" id="slide3">
+            <div class="slide-image-container">
+                <img src="slide3.png" alt="تابع رصيدك بسهولة" class="slide-img">
+            </div>
+            <div class="slide-content">
+                <h3>تابع رصيدك بسهولة</h3>
+                <p>اعرف رصيدك المتبقي في أي وقت وتابع تقدمك نحو أهدافك.</p>
+            </div>
+        </div>
+
+        <!-- Controls Footer -->
         <div class="controls-footer">
             <button class="btn-text" id="skipOrBackBtn" onclick="handleBackOrSkip()">تخطي</button>
             
