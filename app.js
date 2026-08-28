@@ -19,17 +19,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // =========================================================
-// 🟢 ضع كود firebaseConfig الخاص بك هنا 🟢
+// Firebase Config
 // =========================================================
 const firebaseConfig = {
-     apiKey: "AIzaSyDZ6EhqJ7GgrSAoWaeUB_Z-4LhsQ785Mo4",
+    apiKey: "AIzaSyDZ6EhqJ7GgrSAoWaeUB_Z-4LhsQ785Mo4",
     authDomain: "home-budget-app-71cf0.firebaseapp.com",
     projectId: "home-budget-app-71cf0",
     storageBucket: "home-budget-app-71cf0.firebasestorage.app",
     messagingSenderId: "336503031798",
     appId: "1:336503031798:web:8454b0ab99ea44a65de9d7"
 };
-// =========================================================
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -54,6 +53,7 @@ const toggleAuthText = document.getElementById('toggleAuthText');
 const nameFieldGroup = document.getElementById('nameFieldGroup');
 const googleAuthBtn = document.getElementById('googleAuthBtn');
 const userNameDisplay = document.getElementById('userNameDisplay');
+const userNameDisplayMain = document.getElementById('userNameDisplayMain');
 const logoutBtn = document.getElementById('logoutBtn');
 
 const monthPicker = document.getElementById('monthPicker');
@@ -68,7 +68,37 @@ const saveIncomeBtn = document.getElementById('saveIncomeBtn');
 const searchInput = document.getElementById('searchInput');
 const filterCategory = document.getElementById('filterCategory');
 
-// --- دالة أمنية لتطهير النصوص ومنع هجمات XSS ---
+// =========================================================
+// 🍞 Toast Notifications
+// =========================================================
+function showToast(message, type = 'info', duration = 3000) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+
+    const icons = {
+        success: 'fa-circle-check',
+        error: 'fa-circle-xmark',
+        warning: 'fa-triangle-exclamation',
+        info: 'fa-circle-info'
+    };
+
+    toast.className = `custom-toast ${type}`;
+    toast.innerHTML = `
+        <i class="fa-solid ${icons[type]}"></i>
+        <span class="fw-semibold">${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'toastIn 0.3s ease reverse forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+// =========================================================
+// 🔒 Security
+// =========================================================
 function sanitizeHTML(str) {
     if (!str) return '';
     const temp = document.createElement('div');
@@ -76,7 +106,9 @@ function sanitizeHTML(str) {
     return temp.innerHTML;
 }
 
-// --- 1. إدارة الوضع الداكن (Dark Mode) ---
+// =========================================================
+// 🌙 Theme Management
+// =========================================================
 function initTheme() {
     const savedTheme = localStorage.getItem('appTheme') || 'light';
     document.documentElement.setAttribute('data-bs-theme', savedTheme);
@@ -89,6 +121,11 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-bs-theme', newTheme);
     localStorage.setItem('appTheme', newTheme);
     updateThemeIcons(newTheme);
+
+    // Update charts if they exist
+    if (categoryChartInstance || comparisonChartInstance) {
+        listenToMonthData();
+    }
 }
 
 function updateThemeIcons(theme) {
@@ -105,20 +142,50 @@ if (themeToggleAuth) themeToggleAuth.addEventListener('click', toggleTheme);
 if (themeToggleApp) themeToggleApp.addEventListener('click', toggleTheme);
 initTheme();
 
-// --- 2. Auth State Observer ---
+// =========================================================
+// 👁️ Password Toggle
+// =========================================================
+const togglePasswordBtn = document.getElementById('togglePassword');
+if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', () => {
+        const passwordInput = document.getElementById('authPassword');
+        const icon = togglePasswordBtn.querySelector('i');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+}
+
+// =========================================================
+// 🔐 Auth State Observer
+// =========================================================
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
         const displayName = user.displayName || user.email.split('@')[0];
-        userNameDisplay.textContent = sanitizeHTML(displayName);
+        const safeName = sanitizeHTML(displayName);
+
+        userNameDisplay.textContent = safeName;
+        userNameDisplayMain.textContent = safeName;
 
         authSection.classList.add('d-none');
         appSection.classList.remove('d-none');
+        appSection.classList.add('d-flex');
         monthPicker.value = currentMonth;
+
+        showToast(`مرحباً بيك، ${safeName}! 👋`, 'success');
         listenToMonthData();
     } else {
         currentUser = null;
         appSection.classList.add('d-none');
+        appSection.classList.remove('d-flex');
         authSection.classList.remove('d-none');
     }
 });
@@ -128,7 +195,8 @@ googleAuthBtn.addEventListener('click', async () => {
     try {
         await signInWithPopup(auth, googleProvider);
     } catch (error) {
-        Swal.fire({ icon: 'error', title: 'خطأ', text: 'فشل تسجيل الدخول بواسطة Google' });
+        showToast('فشل تسجيل الدخول بواسطة Google', 'error');
+        console.error(error);
     }
 });
 
@@ -158,116 +226,229 @@ authForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('authPassword').value;
     const name = document.getElementById('authName').value.trim();
 
-    // التحقق من صحة كلمة السر أمنياً
     if (isSignUpMode && password.length < 8) {
-        Swal.fire({ icon: 'warning', title: 'كلمة سر ضعيفة', text: 'يجب أن تتكون كلمة السر من 8 خانات على الأقل.' });
+        showToast('يجب أن تتكون كلمة السر من 8 خانات على الأقل', 'warning');
         return;
     }
+
+    authBtn.disabled = true;
+    authBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> جاري التحميل...`;
 
     try {
         if (isSignUpMode) {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             if (name) await updateProfile(userCredential.user, { displayName: name });
-            window.location.reload();
+            showToast('تم إنشاء الحساب بنجاح! 🎉', 'success');
         } else {
             await signInWithEmailAndPassword(auth, email, password);
+            showToast('تم تسجيل الدخول بنجاح! ✅', 'success');
         }
     } catch (error) {
-        console.error("Auth Error Code:", error.code, error.message);
+        console.error("Auth Error:", error.code, error.message);
         let msg = 'حدث خطأ أثناء العملية.';
-        
+
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
             msg = 'البريد الإلكتروني أو كلمة السر غير صحيحة.';
         } else if (error.code === 'auth/email-already-in-use') {
-            msg = 'هذا البريد الإلكتروني مسجل بالفعل! حاول تسجيل الدخول بدلاً من إنشاء حساب جديد.';
+            msg = 'هذا البريد مسجل بالفعل! حاول تسجيل الدخول.';
         } else if (error.code === 'auth/weak-password') {
-            msg = 'كلمة السر ضعيفة جداً. يرجى إدخال كلمة سر أقوى.';
+            msg = 'كلمة السر ضعيفة جداً. استخدم أحرف وأرقام ورموز.';
         } else if (error.code === 'auth/invalid-email') {
             msg = 'صيغة البريد الإلكتروني غير صحيحة.';
         } else {
-            msg = `خطأ: ${error.message}`;
+            msg = error.message;
         }
-        
+
         Swal.fire({ icon: 'error', title: 'خطأ في الحساب', text: msg });
+    } finally {
+        authBtn.disabled = false;
+        authBtn.innerHTML = isSignUpMode 
+            ? `<i class="fa-solid fa-user-plus me-1"></i> تسجيل الحساب`
+            : `<i class="fa-solid fa-right-to-bracket me-1"></i> دخول`;
     }
 });
 
-logoutBtn.addEventListener('click', () => signOut(auth));
+logoutBtn.addEventListener('click', () => {
+    Swal.fire({
+        title: 'تسجيل الخروج؟',
+        text: 'هل أنت متأكد أنك تريد الخروج؟',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، خروج',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#ef4444'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            signOut(auth);
+            showToast('تم تسجيل الخروج', 'info');
+        }
+    });
+});
 
 monthPicker.addEventListener('change', (e) => {
     currentMonth = e.target.value;
     listenToMonthData();
+    showToast(`تم التبديل إلى ${currentMonth}`, 'info', 1500);
 });
 
-// --- 3. Data Sync ---
+// =========================================================
+// 🔑 Forgot Password (REAL Firebase implementation)
+// =========================================================
+const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const forgotModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
+        forgotModal.show();
+    });
+}
+
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('resetEmail').value.trim();
+
+        if (!email) {
+            showToast('يرجى إدخال البريد الإلكتروني', 'warning');
+            return;
+        }
+
+        const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> جاري الإرسال...`;
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+
+            const modalElement = document.getElementById('forgotPasswordModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance.hide();
+
+            showToast('✉️ تم إرسال رابط الاستعادة! افحص بريدك', 'success', 5000);
+            document.getElementById('resetEmail').value = '';
+        } catch (error) {
+            let msg = 'حدث خطأ أثناء الإرسال.';
+            if (error.code === 'auth/user-not-found') {
+                msg = 'لا يوجد حساب مسجل بهذا البريد.';
+            } else if (error.code === 'auth/invalid-email') {
+                msg = 'صيغة البريد غير صحيحة.';
+            }
+            showToast(msg, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-1"></i> إرسال رابط الاستعادة`;
+        }
+    });
+}
+
+// =========================================================
+// 📊 Data Sync
+// =========================================================
 function listenToMonthData() {
     if (!currentUser) return;
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
+
+    // Show loading state
+    totalIncomeText.textContent = '...';
+    totalExpenseText.textContent = '...';
+    remainingText.textContent = '...';
+
     onSnapshot(docRef, (docSnap) => {
         let data = { income: 0, transactions: [] };
         if (docSnap.exists()) data = docSnap.data();
         activeTransactions = data.transactions || [];
         updateUI(data);
     }, (error) => {
-        console.error("Firestore Permission Error:", error);
+        console.error("Firestore Error:", error);
+        showToast('خطأ في تحميل البيانات', 'error');
     });
 }
 
-// Add Expense مع التحقق الأمني من المدخلات
+// =========================================================
+// ➕ Add Expense
+// =========================================================
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const descRaw = document.getElementById('descInput').value.trim();
     const amount = parseFloat(document.getElementById('amountInput').value);
     const category = document.getElementById('categoryInput').value;
 
-    // التحقق الأمني للمبلغ والوصف
     if (!amount || amount <= 0) {
-        Swal.fire({ icon: 'warning', title: 'مبلغ غير صالح', text: 'يرجى إدخال مبلغ أكبر من الصفر.' });
+        showToast('يرجى إدخال مبلغ أكبر من الصفر', 'warning');
         return;
     }
     if (!descRaw || descRaw.length > 100) {
-        Swal.fire({ icon: 'warning', title: 'وصف غير صالح', text: 'يرجى إدخال وصف لا يتجاوز 100 حرف.' });
+        showToast('يرجى إدخال وصف لا يتجاوز 100 حرف', 'warning');
         return;
     }
 
     const desc = sanitizeHTML(descRaw);
-    const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
-    const docSnap = await getDoc(docRef);
-    let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
+    const submitBtn = transactionForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> جاري الإضافة...`;
 
-    currentData.transactions.push({
-        id: Date.now(),
-        date: new Date().toLocaleDateString('ar-EG'),
-        desc, amount, category
-    });
+    try {
+        const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
+        const docSnap = await getDoc(docRef);
+        let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
 
-    await setDoc(docRef, currentData);
-    transactionForm.reset();
-    Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 1200, showConfirmButton: false });
+        currentData.transactions.push({
+            id: crypto.randomUUID(),
+            date: new Date().toLocaleDateString('ar-EG'),
+            desc, 
+            amount, 
+            category
+        });
+
+        await setDoc(docRef, currentData);
+        transactionForm.reset();
+        showToast('✅ تمت إضافة المصروف بنجاح', 'success');
+    } catch (error) {
+        showToast('حدث خطأ أثناء الإضافة', 'error');
+        console.error(error);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fa-solid fa-plus me-1"></i> إضافة المصروف`;
+    }
 });
 
-// Save Monthly Income مع التحقق الأمني
+// =========================================================
+// 💰 Save Monthly Income
+// =========================================================
 saveIncomeBtn.addEventListener('click', async () => {
     const newIncome = parseFloat(monthlyIncomeInput.value) || 0;
     if (newIncome < 0) {
-        Swal.fire({ icon: 'warning', title: 'قيمة غير صالحة', text: 'لا يمكن إدخال دخل بالسالب.' });
+        showToast('لا يمكن إدخال دخل بالسالب', 'warning');
         return;
     }
 
-    const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
-    const docSnap = await getDoc(docRef);
-    let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
-    currentData.income = newIncome;
-    await setDoc(docRef, currentData);
-    monthlyIncomeInput.value = '';
-    Swal.fire({ icon: 'success', title: 'تم حفظ الدخل', timer: 1200, showConfirmButton: false });
+    saveIncomeBtn.disabled = true;
+    saveIncomeBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> جاري الحفظ...`;
+
+    try {
+        const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
+        const docSnap = await getDoc(docRef);
+        let currentData = docSnap.exists() ? docSnap.data() : { income: 0, transactions: [] };
+        currentData.income = newIncome;
+        await setDoc(docRef, currentData);
+        monthlyIncomeInput.value = '';
+        showToast('💰 تم حفظ الدخل الشهري', 'success');
+    } catch (error) {
+        showToast('حدث خطأ أثناء الحفظ', 'error');
+    } finally {
+        saveIncomeBtn.disabled = false;
+        saveIncomeBtn.innerHTML = `<i class="fa-solid fa-floppy-disk me-1"></i> حفظ الدخل`;
+    }
 });
 
-// --- 4. Delete Confirmation Modal (SweetAlert2) ---
+// =========================================================
+// 🗑️ Delete Transaction
+// =========================================================
 window.deleteTransaction = function(id) {
     Swal.fire({
         title: 'هل أنت متأكد؟',
-        text: "سوف يتم حذف هذا المصروف بشكل نهائي!",
+        text: "سيتم حذف هذا المصروف نهائياً!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
@@ -276,36 +457,88 @@ window.deleteTransaction = function(id) {
         cancelButtonText: 'إلغاء'
     }).then(async (result) => {
         if (result.isConfirmed) {
-            const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                let currentData = docSnap.data();
-                currentData.transactions = currentData.transactions.filter(t => t.id !== id);
-                await setDoc(docRef, currentData);
-                Swal.fire({ icon: 'success', title: 'تم الحذف بنجاح', timer: 1000, showConfirmButton: false });
+            try {
+                const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    let currentData = docSnap.data();
+                    currentData.transactions = currentData.transactions.filter(t => t.id !== id);
+                    await setDoc(docRef, currentData);
+                    showToast('🗑️ تم الحذف بنجاح', 'success');
+                }
+            } catch (error) {
+                showToast('حدث خطأ أثناء الحذف', 'error');
             }
         }
     });
 };
 
-// --- 5. Search & Filter Listeners ---
+// =========================================================
+// 🔍 Search & Filter
+// =========================================================
 searchInput.addEventListener('input', () => renderTable(activeTransactions));
 filterCategory.addEventListener('change', () => renderTable(activeTransactions));
 
-// --- 6. Render UI ---
+// =========================================================
+// 🎨 Render UI
+// =========================================================
 function updateUI(data) {
     const income = data.income || 0;
     const transactions = data.transactions || [];
     const expenses = transactions.reduce((acc, t) => acc + t.amount, 0);
     const remaining = income - expenses;
 
-    totalIncomeText.textContent = `${income.toLocaleString()} ج.م`;
-    totalExpenseText.textContent = `${expenses.toLocaleString()} ج.م`;
-    remainingText.textContent = `${remaining.toLocaleString()} ج.م`;
+    // Calculate percentages
+    const expensePercent = income > 0 ? ((expenses / income) * 100).toFixed(1) : 0;
+    const savingsRate = income > 0 ? ((remaining / income) * 100).toFixed(1) : 0;
+
+    // Animate numbers
+    animateValue(totalIncomeText, income, ' ج.م');
+    animateValue(totalExpenseText, expenses, ' ج.م');
+    animateValue(remainingText, remaining, ' ج.م');
+
+    // Update trends
+    document.getElementById('expenseTrend').textContent = `${expensePercent}% من الدخل`;
+    document.getElementById('savingsRate').textContent = `${savingsRate}% توفير`;
 
     renderTable(transactions);
     renderCharts(income, expenses, transactions);
 }
+
+function animateValue(element, value, suffix = '') {
+    const start = parseFloat(element.textContent.replace(/[^0-9.-]/g, '')) || 0;
+    const duration = 500;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const current = start + (value - start) * easeProgress;
+
+        element.textContent = `${current.toLocaleString('ar-EG', {maximumFractionDigits: 2})}${suffix}`;
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+// =========================================================
+// 📋 Render Table
+// =========================================================
+const categoryIcons = {
+    'طعام': '🍽️',
+    'تسوق': '🛍️',
+    'فواتير': '💡',
+    'مواصلات': '🚗',
+    'صحة': '🏥',
+    'ترفيه': '🎬',
+    'تعليم': '📚',
+    'أخرى': '📦'
+};
 
 function renderTable(transactions) {
     const query = searchInput.value.trim().toLowerCase();
@@ -317,20 +550,29 @@ function renderTable(transactions) {
         return matchesQuery && matchesCat;
     });
 
-    transactionsTableBody.innerHTML = '';
+    const emptyState = document.getElementById('tableEmptyState');
+
     if (filtered.length === 0) {
-        transactionsTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">لا توجد مصاريف مطابقة.</td></tr>`;
+        transactionsTableBody.innerHTML = '';
+        emptyState.classList.remove('d-none');
         return;
     }
-    filtered.forEach(t => {
+
+    emptyState.classList.add('d-none');
+    transactionsTableBody.innerHTML = '';
+
+    filtered.forEach((t, index) => {
         const tr = document.createElement('tr');
+        tr.style.animation = `fadeInUp 0.3s ease ${index * 0.05}s both`;
+        const icon = categoryIcons[t.category] || '📦';
+
         tr.innerHTML = `
-            <td>${sanitizeHTML(t.date)}</td>
+            <td class="text-muted">${sanitizeHTML(t.date)}</td>
             <td class="fw-bold">${sanitizeHTML(t.desc)}</td>
-            <td><span class="badge bg-secondary">${sanitizeHTML(t.category)}</span></td>
-            <td class="fw-bold text-danger">-${t.amount.toLocaleString()} ج.م</td>
-            <td>
-                <button onclick="deleteTransaction(${t.id})" class="btn btn-outline-danger btn-sm">
+            <td><span class="badge" style="background: var(--bg-body); color: var(--text-primary); border: 1px solid var(--border-color);">${icon} ${sanitizeHTML(t.category)}</span></td>
+            <td class="fw-bold" style="color: var(--danger);">-${t.amount.toLocaleString('ar-EG')} ج.م</td>
+            <td class="text-center">
+                <button onclick="deleteTransaction('${t.id}')" class="btn btn-outline-danger btn-sm" title="حذف">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
             </td>
@@ -339,66 +581,162 @@ function renderTable(transactions) {
     });
 }
 
+// =========================================================
+// 📊 Render Charts
+// =========================================================
 function renderCharts(income, expenses, transactions) {
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const textColor = isDark ? '#cbd5e1' : '#64748b';
+    const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
     const categoryTotals = {};
-    transactions.forEach(t => { categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount; });
-
-    const ctx1 = document.getElementById('categoryChart').getContext('2d');
-    if (categoryChartInstance) categoryChartInstance.destroy();
-    categoryChartInstance = new Chart(ctx1, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(categoryTotals),
-            datasets: [{ data: Object.values(categoryTotals), backgroundColor: ['#4318ff', '#6ad2ff', '#33d69f', '#ffb547', '#ff5b5b', '#a0aec0'] }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
+    transactions.forEach(t => { 
+        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount; 
     });
 
-    const ctx2 = document.getElementById('comparisonChart').getContext('2d');
-    if (comparisonChartInstance) comparisonChartInstance.destroy();
-    comparisonChartInstance = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: ['الميزانية'],
-            datasets: [
-                { label: 'الدخل', data: [income], backgroundColor: '#10b981', borderRadius: 8 },
-                { label: 'المصاريف', data: [expenses], backgroundColor: '#ef4444', borderRadius: 8 }
-            ]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-    });
-}
-// 1. إظهار نافذة نسيت كلمة المرور عند الضغط على الرابط
-const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-if (forgotPasswordLink) {
-    forgotPasswordLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        const forgotModal = new bootstrap.Modal(document.getElementById('forgotPasswordModal'));
-        forgotModal.show();
-    });
-}
+    const categoryChartEmpty = document.getElementById('categoryChartEmpty');
+    const comparisonChartEmpty = document.getElementById('comparisonChartEmpty');
 
-// 2. معالجة إرسال طلب استعادة كلمة المرور
-const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-if (forgotPasswordForm) {
-    forgotPasswordForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('resetEmail').value;
+    // Category Chart
+    if (Object.keys(categoryTotals).length === 0) {
+        if (categoryChartInstance) {
+            categoryChartInstance.destroy();
+            categoryChartInstance = null;
+        }
+        document.getElementById('categoryChart').style.display = 'none';
+        categoryChartEmpty.classList.remove('d-none');
+    } else {
+        document.getElementById('categoryChart').style.display = 'block';
+        categoryChartEmpty.classList.add('d-none');
 
-        // إغلاق النافذة المنبثقة
-        const modalElement = document.getElementById('forgotPasswordModal');
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        modalInstance.hide();
+        const ctx1 = document.getElementById('categoryChart').getContext('2d');
+        if (categoryChartInstance) categoryChartInstance.destroy();
 
-        // إظهار رسالة نجاح للمستخدم (كمحاكاة للإرسال أو ربطها بـ Firebase Authentication لاحقاً)
-        Swal.fire({
-            icon: 'success',
-            title: 'تم الإرسال بنجاح',
-            text: `تم إرسال تعليمات استعادة كلمة المرور إلى البريد: ${email}`,
-            confirmButtonText: 'حسناً'
+        categoryChartInstance = new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(categoryTotals),
+                datasets: [{ 
+                    data: Object.values(categoryTotals), 
+                    backgroundColor: [
+                        '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', 
+                        '#f97316', '#eab308', '#10b981', '#06b6d4'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            color: textColor,
+                            font: { family: 'Cairo', size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                        titleColor: isDark ? '#f1f5f9' : '#1e293b',
+                        bodyColor: isDark ? '#cbd5e1' : '#64748b',
+                        borderColor: isDark ? '#334155' : '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                const val = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const pct = ((val / total) * 100).toFixed(1);
+                                return ` ${val.toLocaleString('ar-EG')} ج.م (${pct}%)`;
+                            }
+                        }
+                    }
+                }
+            }
         });
+    }
 
-        // تفريغ الحقل
-        document.getElementById('resetEmail').value = '';
-    });
+    // Comparison Chart
+    if (income === 0 && expenses === 0) {
+        if (comparisonChartInstance) {
+            comparisonChartInstance.destroy();
+            comparisonChartInstance = null;
+        }
+        document.getElementById('comparisonChart').style.display = 'none';
+        comparisonChartEmpty.classList.remove('d-none');
+    } else {
+        document.getElementById('comparisonChart').style.display = 'block';
+        comparisonChartEmpty.classList.add('d-none');
+
+        const ctx2 = document.getElementById('comparisonChart').getContext('2d');
+        if (comparisonChartInstance) comparisonChartInstance.destroy();
+
+        comparisonChartInstance = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['الشهر الحالي'],
+                datasets: [
+                    { 
+                        label: 'الدخل', 
+                        data: [income], 
+                        backgroundColor: '#10b981',
+                        borderRadius: 8,
+                        barThickness: 40
+                    },
+                    { 
+                        label: 'المصاريف', 
+                        data: [expenses], 
+                        backgroundColor: '#ef4444',
+                        borderRadius: 8,
+                        barThickness: 40
+                    }
+                ]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            color: textColor,
+                            font: { family: 'Cairo', size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                        titleColor: isDark ? '#f1f5f9' : '#1e293b',
+                        bodyColor: isDark ? '#cbd5e1' : '#64748b',
+                        borderColor: isDark ? '#334155' : '#e2e8f0',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.dataset.label}: ${context.raw.toLocaleString('ar-EG')} ج.م`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: { color: textColor, font: { family: 'Cairo' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: textColor, font: { family: 'Cairo' } }
+                    }
+                }
+            }
+        });
+    }
 }
