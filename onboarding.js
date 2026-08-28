@@ -2,16 +2,12 @@ let currentSlide = 1;
 const totalSlides = 3;
 
 function updateSlideView() {
-    // Hide all slides
-    document.querySelectorAll('.slide').forEach(s => {
-        s.classList.remove('active');
-    });
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
 
-    // Show current slide with delay for animation
     setTimeout(() => {
         document.getElementById(`slide${currentSlide}`).classList.add('active');
-    }, 50);
+    }, 30);
     document.querySelectorAll('.dot')[currentSlide - 1].classList.add('active');
 
     const container = document.getElementById('mainContainer');
@@ -19,12 +15,10 @@ function updateSlideView() {
     const skipOrBackBtn = document.getElementById('skipOrBackBtn');
     const progressBar = document.getElementById('progressBar');
 
-    // Remove old themes
     container.classList.remove('theme-blue', 'theme-red', 'theme-green');
 
     if (currentSlide === 1) {
         container.classList.add('theme-blue');
-        skipOrBackBtn.textContent = 'تخطي';
         skipOrBackBtn.innerHTML = '<i class="fa-solid fa-forward-step me-1"></i> تخطي';
         nextBtn.innerHTML = '<span>التالي</span> <i class="fa-solid fa-arrow-left"></i>';
         progressBar.style.width = '33.33%';
@@ -46,27 +40,25 @@ function nextSlide() {
         currentSlide++;
         updateSlideView();
     } else {
-        // Add exit animation
         const container = document.getElementById('mainContainer');
-        container.style.transform = 'scale(0.9) translateY(20px)';
-        container.style.opacity = '0';
+        container.style.transform = 'scale(0.96)';
+        container.style.opacity = '0.8';
 
         setTimeout(() => {
             window.location.href = 'login.html';
-        }, 400);
+        }, 300);
     }
 }
 
 function handleBackOrSkip() {
     if (currentSlide === 1) {
-        // Exit animation then redirect
         const container = document.getElementById('mainContainer');
-        container.style.transform = 'scale(0.9) translateY(20px)';
-        container.style.opacity = '0';
+        container.style.transform = 'scale(0.96)';
+        container.style.opacity = '0.8';
 
         setTimeout(() => {
             window.location.href = 'login.html';
-        }, 400);
+        }, 300);
     } else {
         currentSlide--;
         updateSlideView();
@@ -76,18 +68,6 @@ function handleBackOrSkip() {
 function goToSlide(slideNum) {
     currentSlide = slideNum;
     updateSlideView();
-}
-
-// Auto-play slides (optional - can be removed)
-let autoPlayInterval;
-function startAutoPlay() {
-    autoPlayInterval = setInterval(() => {
-        if (currentSlide < totalSlides) {
-            nextSlide();
-        } else {
-            clearInterval(autoPlayInterval);
-        }
-    }, 5000);
 }
 
 // Touch swipe support
