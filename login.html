@@ -3,17 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#4f46e5">
     <title>ميزانيتي - إدارة الميزانية المنزلية</title>
-    <!-- Google Fonts: Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Bootstrap 5 RTL -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 <base target="_blank">
 </head>
@@ -24,7 +20,7 @@
 
     <!-- Auth Section -->
     <section id="authSection" class="auth-container d-flex align-items-center justify-content-center min-vh-100">
-        <div class="card auth-card shadow-sm p-4 border">
+        <div class="card auth-card shadow-sm p-4">
             <div class="text-end mb-2">
                 <button id="themeToggleAuth" class="btn btn-sm btn-outline-secondary rounded-circle" title="تبديل الوضع">
                     <i class="fa-solid fa-moon"></i>
@@ -58,7 +54,7 @@
                     <div class="input-group">
                         <span class="input-group-text"><i class="fa-solid fa-lock text-muted"></i></span>
                         <input type="password" id="authPassword" class="form-control" placeholder="••••••••" required>
-                        <button type="button" class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                        <button type="button" class="input-group-text" id="togglePassword" style="cursor: pointer; border-right: none;">
                             <i class="fa-solid fa-eye text-muted"></i>
                         </button>
                     </div>
@@ -98,13 +94,13 @@
                     <span>ميزانيتي</span>
                 </a>
                 <div class="d-flex align-items-center gap-2">
-                    <div class="d-none d-md-flex align-items-center gap-2 me-3">
+                    <div class="d-none d-md-flex align-items-center gap-2 me-2">
                         <div class="text-end">
-                            <small class="text-muted d-block" style="font-size: 0.7rem;">مرحباً</small>
-                            <span id="userNameDisplay" class="fw-bold" style="font-size: 0.9rem;">المستخدم</span>
+                            <small class="text-muted d-block" style="font-size: 0.65rem;">مرحباً</small>
+                            <span id="userNameDisplay" class="fw-bold" style="font-size: 0.85rem;">المستخدم</span>
                         </div>
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                            <i class="fa-solid fa-user" style="font-size: 0.8rem;"></i>
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="fa-solid fa-user" style="font-size: 0.75rem;"></i>
                         </div>
                     </div>
                     <button id="themeToggleApp" class="btn btn-sm btn-outline-secondary rounded-circle" title="تبديل الوضع">
@@ -118,169 +114,162 @@
         </nav>
 
         <!-- Main Content -->
-        <main class="container py-4">
-            <!-- 1. الترحيب واختيار الشهر -->
-            <div class="row align-items-center mb-4 animate-fade-in">
-                <div class="col-md-6 mb-3 mb-md-0">
-                    <h3 class="fw-bold mb-1">أهلاً بيك، <span id="userNameDisplayMain" class="text-primary">المستخدم</span> 👋</h3>
-                    <p class="text-muted mb-0">ملخص ميزانيتك الشهرية في لمحة واحدة</p>
+        <main class="container py-3">
+            <!-- 1. Welcome -->
+            <div class="row align-items-center mb-3 animate-fade-in">
+                <div class="col-md-6 mb-2 mb-md-0">
+                    <h4 class="fw-bold mb-1">أهلاً بيك، <span id="userNameDisplayMain" class="text-primary">المستخدم</span> 👋</h4>
+                    <p class="text-muted mb-0 small">ملخص ميزانيتك الشهرية</p>
                 </div>
                 <div class="col-md-6 d-flex justify-content-md-end">
-                    <div class="input-group shadow-sm" style="max-width: 240px; border-radius: var(--radius);">
-                        <span class="input-group-text bg-primary text-white border-0"><i class="fa-solid fa-calendar-days"></i></span>
-                        <input type="month" id="monthPicker" class="form-control fw-bold text-center border-0">
+                    <div class="input-group shadow-sm" style="max-width: 200px; border-radius: var(--radius);">
+                        <span class="input-group-text bg-primary text-white border-0"><i class="fa-solid fa-calendar-days" style="font-size: 0.8rem;"></i></span>
+                        <input type="month" id="monthPicker" class="form-control fw-bold text-center border-0" style="font-size: 0.85rem;">
                     </div>
                 </div>
             </div>
 
-            <!-- 2. نموذج تحديد الدخل الشهري -->
-            <div class="card p-4 mb-4 animate-fade-in">
-                <div class="section-header income-header">
+            <!-- 2. Income Input -->
+            <div class="card p-3 mb-3 animate-fade-in">
+                <div class="section-header income-header mb-2">
                     <i class="fa-solid fa-sack-dollar"></i>
                     <span>تحديد دخل الشهر</span>
                 </div>
-                <div class="row align-items-end g-3">
-                    <div class="col-md-8">
-                        <label class="form-label text-muted small fw-semibold">قيمة الدخل الشهري</label>
+                <div class="row align-items-end g-2">
+                    <div class="col-8">
+                        <label class="form-label text-muted small fw-semibold mb-1">قيمة الدخل الشهري</label>
                         <div class="input-group">
                             <input type="number" id="monthlyIncomeInput" class="form-control" placeholder="مثال: 15000">
                             <span class="input-group-text">ج.م</span>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <button id="saveIncomeBtn" class="btn btn-primary w-100 fw-bold">
-                            <i class="fa-solid fa-floppy-disk me-1"></i> حفظ الدخل
+                            <i class="fa-solid fa-floppy-disk"></i> <span class="d-none d-sm-inline">حفظ</span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- 3. بطاقات ملخص الأرقام -->
-            <div class="stats-grid mb-4 animate-fade-in">
-                <div class="stat-card income">
-                    <div class="stat-icon">
-                        <i class="fa-solid fa-hand-holding-dollar"></i>
+            <!-- 3. CIRCLE STATS -->
+            <div class="summary-horizontal-container mb-3">
+                <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                    <div class="stat-circle income-card">
+                        <div class="icon-badge bg-green">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <span class="stat-title text-green">إجمالي الدخل</span>
+                        <div class="divider-line bg-green"><span class="dot bg-green"></span></div>
+                        <h5 id="totalIncomeText" class="stat-value text-green mb-0">0 ج.م</h5>
                     </div>
-                    <div class="stat-label">إجمالي الدخل</div>
-                    <h5 id="totalIncomeText" class="stat-value mb-0">0 ج.م</h5>
-                    <div class="stat-trend">
-                        <i class="fa-solid fa-arrow-trend-up"></i>
-                        <span>الدخل الشهري</span>
-                    </div>
-                </div>
 
-                <div class="stat-card expense">
-                    <div class="stat-icon">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <div class="stat-circle expense-card">
+                        <div class="icon-badge bg-red">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                        <span class="stat-title text-red">إجمالي المصاريف</span>
+                        <div class="divider-line bg-red"><span class="dot bg-red"></span></div>
+                        <h5 id="totalExpenseText" class="stat-value text-red mb-0">0 ج.م</h5>
                     </div>
-                    <div class="stat-label">إجمالي المصاريف</div>
-                    <h5 id="totalExpenseText" class="stat-value mb-0">0 ج.م</h5>
-                    <div class="stat-trend">
-                        <i class="fa-solid fa-arrow-trend-down"></i>
-                        <span id="expenseTrend">0%</span>
-                    </div>
-                </div>
 
-                <div class="stat-card remaining">
-                    <div class="stat-icon">
-                        <i class="fa-solid fa-piggy-bank"></i>
-                    </div>
-                    <div class="stat-label">الرصيد المتبقي</div>
-                    <h5 id="remainingText" class="stat-value mb-0">0 ج.م</h5>
-                    <div class="stat-trend">
-                        <i class="fa-solid fa-chart-pie"></i>
-                        <span id="savingsRate">0%</span>
+                    <div class="stat-circle remaining-card">
+                        <div class="icon-badge bg-blue">
+                            <i class="fa-solid fa-piggy-bank"></i>
+                        </div>
+                        <span class="stat-title text-blue">الرصيد المتبقي</span>
+                        <div class="divider-line bg-blue"><span class="dot bg-blue"></span></div>
+                        <h5 id="remainingText" class="stat-value text-blue mb-0">0 ج.م</h5>
                     </div>
                 </div>
             </div>
 
-            <!-- 4. نموذج إضافة المصروف -->
-            <div class="card p-4 mb-4 animate-fade-in">
-                <div class="section-header expense-header">
+            <!-- 4. Add Expense -->
+            <div class="card p-3 mb-3 animate-fade-in">
+                <div class="section-header expense-header mb-2">
                     <i class="fa-solid fa-cart-plus"></i>
                     <span>إضافة مصروف جديد</span>
                 </div>
-                <form id="transactionForm" class="row g-3">
-                    <div class="col-md-5">
-                        <label class="form-label text-muted small fw-semibold">وصف المصروف</label>
+                <form id="transactionForm" class="row g-2">
+                    <div class="col-12 col-md-5">
+                        <label class="form-label text-muted small fw-semibold mb-1">وصف المصروف</label>
                         <input type="text" id="descInput" class="form-control" placeholder="مثال: فاتورة الكهرباء" required>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-muted small fw-semibold">المبلغ</label>
+                    <div class="col-6 col-md-3">
+                        <label class="form-label text-muted small fw-semibold mb-1">المبلغ</label>
                         <div class="input-group">
                             <input type="number" id="amountInput" class="form-control" placeholder="0.00" step="0.01" min="0.01" required>
                             <span class="input-group-text">ج.م</span>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <label class="form-label text-muted small fw-semibold">الفئة</label>
+                    <div class="col-6 col-md-4">
+                        <label class="form-label text-muted small fw-semibold mb-1">الفئة</label>
                         <select id="categoryInput" class="form-select">
-                            <option value="طعام">🍽️ طعام ومشروبات</option>
+                            <option value="طعام">🍽️ طعام</option>
                             <option value="تسوق">🛍️ تسوق</option>
-                            <option value="فواتير">💡 فواتير وخدمات</option>
+                            <option value="فواتير">💡 فواتير</option>
                             <option value="مواصلات">🚗 مواصلات</option>
-                            <option value="صحة">🏥 صحة وعلاج</option>
+                            <option value="صحة">🏥 صحة</option>
                             <option value="ترفيه">🎬 ترفيه</option>
                             <option value="تعليم">📚 تعليم</option>
                             <option value="أخرى">📦 أخرى</option>
                         </select>
                     </div>
-                    <div class="col-12 text-end mt-4">
+                    <div class="col-12 text-end mt-2">
                         <button type="submit" class="btn btn-danger fw-bold px-4">
-                            <i class="fa-solid fa-plus me-1"></i> إضافة المصروف
+                            <i class="fa-solid fa-plus me-1"></i> إضافة
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- 5. الرسوم البيانية -->
-            <div class="row g-4 mb-4">
+            <!-- 5. Charts -->
+            <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <div class="card p-4 h-100">
-                        <div class="section-header chart-header">
+                    <div class="card p-3 h-100">
+                        <div class="section-header chart-header mb-2">
                             <i class="fa-solid fa-chart-pie"></i>
-                            <span>توزيع المصاريف حسب الفئة</span>
+                            <span>توزيع المصاريف</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="categoryChart"></canvas>
                         </div>
                         <div id="categoryChartEmpty" class="empty-state d-none">
                             <i class="fa-solid fa-chart-pie"></i>
-                            <p>لا توجد بيانات كافية لعرض الرسم البياني</p>
+                            <p>لا توجد بيانات كافية</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card p-4 h-100">
-                        <div class="section-header chart-header">
+                    <div class="card p-3 h-100">
+                        <div class="section-header chart-header mb-2">
                             <i class="fa-solid fa-chart-column"></i>
-                            <span>مقارنة الدخل بالمصاريف</span>
+                            <span>الدخل vs المصاريف</span>
                         </div>
                         <div class="chart-container">
                             <canvas id="comparisonChart"></canvas>
                         </div>
                         <div id="comparisonChartEmpty" class="empty-state d-none">
                             <i class="fa-solid fa-chart-column"></i>
-                            <p>أضف مصاريفك أولاً لمشاهدة المقارنة</p>
+                            <p>أضف مصاريفك أولاً</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 6. جدول سجل المصروفات -->
-            <div class="card p-4 animate-fade-in">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+            <!-- 6. History Table -->
+            <div class="card p-3 animate-fade-in">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
                     <div class="section-header history-header mb-0">
                         <i class="fa-solid fa-clock-rotate-left"></i>
                         <span>سجل المصروفات</span>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
-                        <div class="input-group" style="max-width: 200px;">
-                            <span class="input-group-text bg-transparent border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                            <input type="text" id="searchInput" class="form-control border-start-0" placeholder="بحث بالوصف...">
+                        <div class="input-group" style="max-width: 160px;">
+                            <span class="input-group-text bg-transparent border-end-0 py-1"><i class="fa-solid fa-magnifying-glass text-muted" style="font-size: 0.75rem;"></i></span>
+                            <input type="text" id="searchInput" class="form-control border-start-0 py-1" placeholder="بحث..." style="font-size: 0.85rem;">
                         </div>
-                        <select id="filterCategory" class="form-select" style="max-width: 160px;">
-                            <option value="ALL">📋 جميع الفئات</option>
+                        <select id="filterCategory" class="form-select py-1" style="max-width: 130px; font-size: 0.85rem;">
+                            <option value="ALL">الكل</option>
                             <option value="طعام">🍽️ طعام</option>
                             <option value="تسوق">🛍️ تسوق</option>
                             <option value="فواتير">💡 فواتير</option>
@@ -297,21 +286,19 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead>
                             <tr>
-                                <th><i class="fa-regular fa-calendar me-1"></i> التاريخ</th>
-                                <th><i class="fa-solid fa-align-right me-1"></i> الوصف</th>
-                                <th><i class="fa-solid fa-tag me-1"></i> الفئة</th>
-                                <th><i class="fa-solid fa-money-bill me-1"></i> المبلغ</th>
-                                <th class="text-center"><i class="fa-solid fa-gear me-1"></i> إجراءات</th>
+                                <th><i class="fa-regular fa-calendar me-1" style="font-size: 0.75rem;"></i> التاريخ</th>
+                                <th><i class="fa-solid fa-align-right me-1" style="font-size: 0.75rem;"></i> الوصف</th>
+                                <th><i class="fa-solid fa-tag me-1" style="font-size: 0.75rem;"></i> الفئة</th>
+                                <th><i class="fa-solid fa-money-bill me-1" style="font-size: 0.75rem;"></i> المبلغ</th>
+                                <th class="text-center" style="width: 50px;"></th>
                             </tr>
                         </thead>
-                        <tbody id="transactionsTableBody">
-                            <!-- Populated via JS -->
-                        </tbody>
+                        <tbody id="transactionsTableBody"></tbody>
                     </table>
                     <div id="tableEmptyState" class="empty-state">
                         <i class="fa-solid fa-receipt"></i>
-                        <p>لا توجد مصاريف مسجلة لهذا الشهر</p>
-                        <small class="text-muted">ابدأ بإضافة مصروفك الأول من الأعلى 👆</small>
+                        <p>لا توجد مصاريف مسجلة</p>
+                        <small class="text-muted">ابدأ بإضافة مصروفك الأول 👆</small>
                     </div>
                 </div>
             </div>
@@ -322,21 +309,22 @@
     <footer class="footer py-3 text-center">
         <div class="container">
             <p class="text-muted small mb-0">
-                <i class="fa-solid fa-code me-1"></i> Powered by <strong style="color: var(--primary);">Eng. David Kamal</strong> &copy; 2026
+                <i class="fa-solid fa-code me-1" style="font-size: 0.7rem;"></i> 
+                <strong style="color: var(--primary);">Eng. David Kamal</strong> &copy; 2026
             </p>
         </div>
     </footer>
 
-    <!-- نافذة نسيت كلمة المرور -->
+    <!-- Forgot Password Modal -->
     <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header border-0 pb-0">
                     <h5 class="modal-title fw-bold"><i class="fa-solid fa-key me-2 text-primary"></i>استعادة كلمة المرور</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="text-muted small">أدخل بريدك الإلكتروني المسجل وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.</p>
+                    <p class="text-muted small">أدخل بريدك الإلكتروني المسجل وسنرسل لك رابطاً لإعادة التعيين.</p>
                     <form id="forgotPasswordForm">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small">البريد الإلكتروني</label>
@@ -354,7 +342,6 @@
         </div>
     </div>
 
-    <!-- Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
