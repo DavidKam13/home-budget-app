@@ -2,53 +2,63 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مرحباً بك في بيتي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <title>بيتي - تحكم في مصاريف بيتك</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="onboarding.css">
+    <link rel="manifest" href="manifest.json">
+<base target="_blank">
 </head>
 <body>
 
     <div class="onboarding-card theme-blue" id="mainContainer">
-        
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+
         <!-- Slide 1 -->
         <div class="slide active" id="slide1">
             <div class="slide-image-container">
-                <img src="slide1.jpeg" alt="تحكم في مصاريف بيتك" class="slide-img">
+                <img src="slide1.jpeg" alt="تحكم في مصاريف بيتك" class="slide-img" loading="eager">
             </div>
             <div class="slide-content">
-                <h3>تحكم في مصاريف بيتك</h3>
-                <p>سجل دخلك ومصاريفك، تابع رصيدك، واعرف فلوسك بتروح فين.</p>
+                <h3>تحكم في مصاريف بيتك 🏠</h3>
+                <p>سجل دخلك ومصاريفك، تابع رصيدك، واعرف فلوسك بتروح فين بكل سهولة وأمان.</p>
             </div>
         </div>
 
         <!-- Slide 2 -->
         <div class="slide" id="slide2">
             <div class="slide-image-container">
-                <img src="slide2.jpeg" alt="سجل مصاريفك" class="slide-img">
+                <img src="slide2.jpeg" alt="سجل مصاريفك" class="slide-img" loading="lazy">
             </div>
             <div class="slide-content">
-                <h3>سجل مصاريفك</h3>
-                <p>صنف مصاريفك حسب الفئات المختلفة وكن دائماً على اطلاع.</p>
+                <h3>صنف مصاريفك 📊</h3>
+                <p>قسم مصاريفك لفئات مختلفة وتابع كل فئة لوحدها. رؤية واضحة = قرارات أفضل.</p>
             </div>
         </div>
 
         <!-- Slide 3 -->
         <div class="slide" id="slide3">
             <div class="slide-image-container">
-                <img src="slide3.jpeg" alt="تابع رصيدك بسهولة" class="slide-img">
+                <img src="slide3.jpeg" alt="تابع رصيدك بسهولة" class="slide-img" loading="lazy">
             </div>
             <div class="slide-content">
-                <h3>تابع رصيدك بسهولة</h3>
-                <p>اعرف رصيدك المتبقي في أي وقت وتابع تقدمك نحو أهدافك.</p>
+                <h3>وفر أكثر، عيش أحسن 💰</h3>
+                <p>اعرف رصيدك المتبقي في أي وقت، حدد أهدافك، وحقق الاستقرار المالي اللي بتتمناه.</p>
             </div>
         </div>
 
         <!-- Controls Footer -->
         <div class="controls-footer">
-            <button class="btn-text" id="skipOrBackBtn" onclick="handleBackOrSkip()">تخطي</button>
-            
+            <button class="btn-text" id="skipOrBackBtn" onclick="handleBackOrSkip()">
+                <i class="fa-solid fa-forward-step me-1"></i> تخطي
+            </button>
+
             <div class="dots-indicator">
                 <span class="dot active" onclick="goToSlide(1)"></span>
                 <span class="dot" onclick="goToSlide(2)"></span>
@@ -56,14 +66,14 @@
             </div>
 
             <button class="btn-action" id="nextBtn" onclick="nextSlide()">
-                <span>Next</span> <i class="fa-solid fa-chevron-left"></i>
+                <span>التالي</span> <i class="fa-solid fa-arrow-left"></i>
             </button>
         </div>
     </div>
 
     <!-- Global Footer -->
     <div class="global-footer">
-        <i class="fa-solid fa-lock"></i> بياناتك آمنة ومحفوظة لدينا
+        <i class="fa-solid fa-shield-halved"></i> بياناتك مشفرة ومحمية بنسبة 100%
     </div>
 
     <script src="onboarding.js"></script>
