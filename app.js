@@ -69,7 +69,7 @@ const searchInput = document.getElementById('searchInput');
 const filterCategory = document.getElementById('filterCategory');
 
 // =========================================================
-// 🍞 Toast Notifications
+// Toast Notifications
 // =========================================================
 function showToast(message, type = 'info', duration = 3000) {
     const container = document.getElementById('toastContainer');
@@ -97,7 +97,7 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 
 // =========================================================
-// 🔒 Security
+// Security
 // =========================================================
 function sanitizeHTML(str) {
     if (!str) return '';
@@ -107,7 +107,7 @@ function sanitizeHTML(str) {
 }
 
 // =========================================================
-// 🌙 Theme Management
+// Theme
 // =========================================================
 function initTheme() {
     const savedTheme = localStorage.getItem('appTheme') || 'light';
@@ -121,8 +121,6 @@ function toggleTheme() {
     document.documentElement.setAttribute('data-bs-theme', newTheme);
     localStorage.setItem('appTheme', newTheme);
     updateThemeIcons(newTheme);
-
-    // Update charts if they exist
     if (categoryChartInstance || comparisonChartInstance) {
         listenToMonthData();
     }
@@ -143,14 +141,13 @@ if (themeToggleApp) themeToggleApp.addEventListener('click', toggleTheme);
 initTheme();
 
 // =========================================================
-// 👁️ Password Toggle
+// Password Toggle
 // =========================================================
 const togglePasswordBtn = document.getElementById('togglePassword');
 if (togglePasswordBtn) {
     togglePasswordBtn.addEventListener('click', () => {
         const passwordInput = document.getElementById('authPassword');
         const icon = togglePasswordBtn.querySelector('i');
-
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';
             icon.classList.remove('fa-eye');
@@ -164,7 +161,7 @@ if (togglePasswordBtn) {
 }
 
 // =========================================================
-// 🔐 Auth State Observer
+// Auth State
 // =========================================================
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -196,7 +193,6 @@ googleAuthBtn.addEventListener('click', async () => {
         await signInWithPopup(auth, googleProvider);
     } catch (error) {
         showToast('فشل تسجيل الدخول بواسطة Google', 'error');
-        console.error(error);
     }
 });
 
@@ -219,7 +215,7 @@ toggleAuthBtn.addEventListener('click', (e) => {
     }
 });
 
-// Auth Form Submit
+// Auth Form
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('authEmail').value.trim();
@@ -244,21 +240,18 @@ authForm.addEventListener('submit', async (e) => {
             showToast('تم تسجيل الدخول بنجاح! ✅', 'success');
         }
     } catch (error) {
-        console.error("Auth Error:", error.code, error.message);
         let msg = 'حدث خطأ أثناء العملية.';
-
         if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
             msg = 'البريد الإلكتروني أو كلمة السر غير صحيحة.';
         } else if (error.code === 'auth/email-already-in-use') {
             msg = 'هذا البريد مسجل بالفعل! حاول تسجيل الدخول.';
         } else if (error.code === 'auth/weak-password') {
-            msg = 'كلمة السر ضعيفة جداً. استخدم أحرف وأرقام ورموز.';
+            msg = 'كلمة السر ضعيفة. استخدم أحرف وأرقام ورموز.';
         } else if (error.code === 'auth/invalid-email') {
             msg = 'صيغة البريد الإلكتروني غير صحيحة.';
         } else {
             msg = error.message;
         }
-
         Swal.fire({ icon: 'error', title: 'خطأ في الحساب', text: msg });
     } finally {
         authBtn.disabled = false;
@@ -292,7 +285,7 @@ monthPicker.addEventListener('change', (e) => {
 });
 
 // =========================================================
-// 🔑 Forgot Password (REAL Firebase implementation)
+// Forgot Password (REAL Firebase)
 // =========================================================
 const forgotPasswordLink = document.getElementById('forgotPasswordLink');
 if (forgotPasswordLink) {
@@ -320,20 +313,15 @@ if (forgotPasswordForm) {
 
         try {
             await sendPasswordResetEmail(auth, email);
-
             const modalElement = document.getElementById('forgotPasswordModal');
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
             modalInstance.hide();
-
             showToast('✉️ تم إرسال رابط الاستعادة! افحص بريدك', 'success', 5000);
             document.getElementById('resetEmail').value = '';
         } catch (error) {
             let msg = 'حدث خطأ أثناء الإرسال.';
-            if (error.code === 'auth/user-not-found') {
-                msg = 'لا يوجد حساب مسجل بهذا البريد.';
-            } else if (error.code === 'auth/invalid-email') {
-                msg = 'صيغة البريد غير صحيحة.';
-            }
+            if (error.code === 'auth/user-not-found') msg = 'لا يوجد حساب مسجل بهذا البريد.';
+            else if (error.code === 'auth/invalid-email') msg = 'صيغة البريد غير صحيحة.';
             showToast(msg, 'error');
         } finally {
             submitBtn.disabled = false;
@@ -343,13 +331,12 @@ if (forgotPasswordForm) {
 }
 
 // =========================================================
-// 📊 Data Sync
+// Data Sync
 // =========================================================
 function listenToMonthData() {
     if (!currentUser) return;
     const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
 
-    // Show loading state
     totalIncomeText.textContent = '...';
     totalExpenseText.textContent = '...';
     remainingText.textContent = '...';
@@ -366,7 +353,7 @@ function listenToMonthData() {
 }
 
 // =========================================================
-// ➕ Add Expense
+// Add Expense
 // =========================================================
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -406,15 +393,14 @@ transactionForm.addEventListener('submit', async (e) => {
         showToast('✅ تمت إضافة المصروف بنجاح', 'success');
     } catch (error) {
         showToast('حدث خطأ أثناء الإضافة', 'error');
-        console.error(error);
     } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fa-solid fa-plus me-1"></i> إضافة المصروف`;
+        submitBtn.innerHTML = `<i class="fa-solid fa-plus me-1"></i> إضافة`;
     }
 });
 
 // =========================================================
-// 💰 Save Monthly Income
+// Save Income
 // =========================================================
 saveIncomeBtn.addEventListener('click', async () => {
     const newIncome = parseFloat(monthlyIncomeInput.value) || 0;
@@ -424,7 +410,7 @@ saveIncomeBtn.addEventListener('click', async () => {
     }
 
     saveIncomeBtn.disabled = true;
-    saveIncomeBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> جاري الحفظ...`;
+    saveIncomeBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> جاري...`;
 
     try {
         const docRef = doc(db, "users", currentUser.uid, "months", currentMonth);
@@ -438,12 +424,12 @@ saveIncomeBtn.addEventListener('click', async () => {
         showToast('حدث خطأ أثناء الحفظ', 'error');
     } finally {
         saveIncomeBtn.disabled = false;
-        saveIncomeBtn.innerHTML = `<i class="fa-solid fa-floppy-disk me-1"></i> حفظ الدخل`;
+        saveIncomeBtn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span class="d-none d-sm-inline">حفظ</span>`;
     }
 });
 
 // =========================================================
-// 🗑️ Delete Transaction
+// Delete Transaction
 // =========================================================
 window.deleteTransaction = function(id) {
     Swal.fire({
@@ -474,13 +460,13 @@ window.deleteTransaction = function(id) {
 };
 
 // =========================================================
-// 🔍 Search & Filter
+// Search & Filter
 // =========================================================
 searchInput.addEventListener('input', () => renderTable(activeTransactions));
 filterCategory.addEventListener('change', () => renderTable(activeTransactions));
 
 // =========================================================
-// 🎨 Render UI
+// Render UI
 // =========================================================
 function updateUI(data) {
     const income = data.income || 0;
@@ -488,18 +474,9 @@ function updateUI(data) {
     const expenses = transactions.reduce((acc, t) => acc + t.amount, 0);
     const remaining = income - expenses;
 
-    // Calculate percentages
-    const expensePercent = income > 0 ? ((expenses / income) * 100).toFixed(1) : 0;
-    const savingsRate = income > 0 ? ((remaining / income) * 100).toFixed(1) : 0;
-
-    // Animate numbers
     animateValue(totalIncomeText, income, ' ج.م');
     animateValue(totalExpenseText, expenses, ' ج.م');
     animateValue(remainingText, remaining, ' ج.م');
-
-    // Update trends
-    document.getElementById('expenseTrend').textContent = `${expensePercent}% من الدخل`;
-    document.getElementById('savingsRate').textContent = `${savingsRate}% توفير`;
 
     renderTable(transactions);
     renderCharts(income, expenses, transactions);
@@ -507,27 +484,22 @@ function updateUI(data) {
 
 function animateValue(element, value, suffix = '') {
     const start = parseFloat(element.textContent.replace(/[^0-9.-]/g, '')) || 0;
-    const duration = 500;
+    const duration = 400;
     const startTime = performance.now();
 
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const easeProgress = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
         const current = start + (value - start) * easeProgress;
-
         element.textContent = `${current.toLocaleString('ar-EG', {maximumFractionDigits: 2})}${suffix}`;
-
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
+        if (progress < 1) requestAnimationFrame(update);
     }
-
     requestAnimationFrame(update);
 }
 
 // =========================================================
-// 📋 Render Table
+// Render Table
 // =========================================================
 const categoryIcons = {
     'طعام': '🍽️',
@@ -563,17 +535,17 @@ function renderTable(transactions) {
 
     filtered.forEach((t, index) => {
         const tr = document.createElement('tr');
-        tr.style.animation = `fadeInUp 0.3s ease ${index * 0.05}s both`;
+        tr.style.animation = `fadeInUp 0.3s ease ${index * 0.04}s both`;
         const icon = categoryIcons[t.category] || '📦';
 
         tr.innerHTML = `
-            <td class="text-muted">${sanitizeHTML(t.date)}</td>
-            <td class="fw-bold">${sanitizeHTML(t.desc)}</td>
-            <td><span class="badge" style="background: var(--bg-body); color: var(--text-primary); border: 1px solid var(--border-color);">${icon} ${sanitizeHTML(t.category)}</span></td>
-            <td class="fw-bold" style="color: var(--danger);">-${t.amount.toLocaleString('ar-EG')} ج.م</td>
+            <td class="text-muted" style="font-size: 0.85rem;">${sanitizeHTML(t.date)}</td>
+            <td class="fw-bold" style="font-size: 0.9rem;">${sanitizeHTML(t.desc)}</td>
+            <td><span class="badge" style="background: var(--bg-body); color: var(--text-primary); border: 1px solid var(--border-color); font-size: 0.75rem;">${icon} ${sanitizeHTML(t.category)}</span></td>
+            <td class="fw-bold" style="color: var(--danger); font-size: 0.9rem;">-${t.amount.toLocaleString('ar-EG')} ج.م</td>
             <td class="text-center">
-                <button onclick="deleteTransaction('${t.id}')" class="btn btn-outline-danger btn-sm" title="حذف">
-                    <i class="fa-solid fa-trash-can"></i>
+                <button onclick="deleteTransaction('${t.id}')" class="btn btn-outline-danger btn-sm" title="حذف" style="padding: 0.25rem 0.5rem;">
+                    <i class="fa-solid fa-trash-can" style="font-size: 0.75rem;"></i>
                 </button>
             </td>
         `;
@@ -582,11 +554,11 @@ function renderTable(transactions) {
 }
 
 // =========================================================
-// 📊 Render Charts
+// Render Charts
 // =========================================================
 function renderCharts(income, expenses, transactions) {
     const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-    const textColor = isDark ? '#cbd5e1' : '#64748b';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
     const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
 
     const categoryTotals = {};
@@ -599,10 +571,7 @@ function renderCharts(income, expenses, transactions) {
 
     // Category Chart
     if (Object.keys(categoryTotals).length === 0) {
-        if (categoryChartInstance) {
-            categoryChartInstance.destroy();
-            categoryChartInstance = null;
-        }
+        if (categoryChartInstance) { categoryChartInstance.destroy(); categoryChartInstance = null; }
         document.getElementById('categoryChart').style.display = 'none';
         categoryChartEmpty.classList.remove('d-none');
     } else {
@@ -618,36 +587,33 @@ function renderCharts(income, expenses, transactions) {
                 labels: Object.keys(categoryTotals),
                 datasets: [{ 
                     data: Object.values(categoryTotals), 
-                    backgroundColor: [
-                        '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', 
-                        '#f97316', '#eab308', '#10b981', '#06b6d4'
-                    ],
+                    backgroundColor: ['#4f46e5', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#06b6d4'],
                     borderWidth: 0,
-                    hoverOffset: 8
+                    hoverOffset: 6
                 }]
             },
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false,
-                cutout: '65%',
+                cutout: '68%',
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 15,
+                            padding: 12,
                             usePointStyle: true,
                             pointStyle: 'circle',
                             color: textColor,
-                            font: { family: 'Cairo', size: 12 }
+                            font: { family: 'Cairo', size: 11 }
                         }
                     },
                     tooltip: {
                         backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                        titleColor: isDark ? '#f1f5f9' : '#1e293b',
-                        bodyColor: isDark ? '#cbd5e1' : '#64748b',
+                        titleColor: isDark ? '#f8fafc' : '#0f172a',
+                        bodyColor: isDark ? '#94a3b8' : '#64748b',
                         borderColor: isDark ? '#334155' : '#e2e8f0',
                         borderWidth: 1,
-                        padding: 12,
+                        padding: 10,
                         callbacks: {
                             label: function(context) {
                                 const val = context.raw;
@@ -664,10 +630,7 @@ function renderCharts(income, expenses, transactions) {
 
     // Comparison Chart
     if (income === 0 && expenses === 0) {
-        if (comparisonChartInstance) {
-            comparisonChartInstance.destroy();
-            comparisonChartInstance = null;
-        }
+        if (comparisonChartInstance) { comparisonChartInstance.destroy(); comparisonChartInstance = null; }
         document.getElementById('comparisonChart').style.display = 'none';
         comparisonChartEmpty.classList.remove('d-none');
     } else {
@@ -685,16 +648,16 @@ function renderCharts(income, expenses, transactions) {
                     { 
                         label: 'الدخل', 
                         data: [income], 
-                        backgroundColor: '#10b981',
-                        borderRadius: 8,
-                        barThickness: 40
+                        backgroundColor: '#22c55e',
+                        borderRadius: 6,
+                        barThickness: 36
                     },
                     { 
                         label: 'المصاريف', 
                         data: [expenses], 
                         backgroundColor: '#ef4444',
-                        borderRadius: 8,
-                        barThickness: 40
+                        borderRadius: 6,
+                        barThickness: 36
                     }
                 ]
             },
@@ -705,19 +668,19 @@ function renderCharts(income, expenses, transactions) {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            padding: 15,
+                            padding: 12,
                             usePointStyle: true,
                             color: textColor,
-                            font: { family: 'Cairo', size: 12 }
+                            font: { family: 'Cairo', size: 11 }
                         }
                     },
                     tooltip: {
                         backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                        titleColor: isDark ? '#f1f5f9' : '#1e293b',
-                        bodyColor: isDark ? '#cbd5e1' : '#64748b',
+                        titleColor: isDark ? '#f8fafc' : '#0f172a',
+                        bodyColor: isDark ? '#94a3b8' : '#64748b',
                         borderColor: isDark ? '#334155' : '#e2e8f0',
                         borderWidth: 1,
-                        padding: 12,
+                        padding: 10,
                         callbacks: {
                             label: function(context) {
                                 return ` ${context.dataset.label}: ${context.raw.toLocaleString('ar-EG')} ج.م`;
@@ -729,11 +692,11 @@ function renderCharts(income, expenses, transactions) {
                     y: {
                         beginAtZero: true,
                         grid: { color: gridColor },
-                        ticks: { color: textColor, font: { family: 'Cairo' } }
+                        ticks: { color: textColor, font: { family: 'Cairo', size: 11 } }
                     },
                     x: {
                         grid: { display: false },
-                        ticks: { color: textColor, font: { family: 'Cairo' } }
+                        ticks: { color: textColor, font: { family: 'Cairo', size: 11 } }
                     }
                 }
             }
